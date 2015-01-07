@@ -1,29 +1,61 @@
 // variables //
-var currentState = 'open';
+var currentState = 'register';
 var registrationId, name, email;
+
+console.log(currentState);
 
 // methods //
 function clickMsgToContent() {
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    console.log('click');
-    if (currentState == 'open') {
-      chrome.tabs.sendMessage(tabs[0].id, {method: 'openApp', name: name}, function(response) {
-        if (chrome.runtime.lastError) {
-          // An error occurred :(
-          console.log("ERROR: ", chrome.runtime.lastError);
-        } else {
-          // Do something useful with the HTML content
-          console.log(response);
-        }
-      });
+    console.log('click', currentState);
 
-      currentState = 'close';
+    switch(currentState) {
+      case 'register':
+        registerFaF(tabs);
+
+        break;
+
+      case 'open':
+        openFaF(tabs);
+
+        currentState = 'close';
+
+        break;
+
+      case 'close':
+        chrome.tabs.sendMessage(tabs[0].id, {method: 'closeApp'}, function(response) {});
+
+        currentState = 'open';
+
+        break;
+
+      default:
+        registerFaF(tabs);
+
+        break;
+    }
+  });
+}
+
+function registerFaF(tabs) {
+   chrome.tabs.sendMessage(tabs[0].id, {method: 'openRegister'}, function(response) {
+    if (chrome.runtime.lastError) {
+      // An error occurred :(
+      console.log("ERROR: ", chrome.runtime.lastError);
     } else {
-      chrome.tabs.sendMessage(tabs[0].id, {method: 'closeApp'}, function(response) {
+      console.log(response);
+    }
+  });
+}
 
-      });
-
-      currentState = 'open';
+function openFaF(tabs) {
+  chrome.tabs.sendMessage(tabs[0].id, {method: 'openApp', name: name}, function(response) {
+    if (chrome.runtime.lastError) {
+      // An error occurred :(
+      console.log("ERROR: ", chrome.runtime.lastError);
+    } else {
+      // Do something useful with the HTML content
+      console.log(response);
     }
   });
 }
@@ -56,16 +88,7 @@ function registerCallback(regId) {
   } else {
     //todo: set it to btn click instead
     setTimeout(function() {
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      chrome.tabs.sendMessage(tabs[0].id, {method: 'openRegister'}, function(response) {
-        if (chrome.runtime.lastError) {
-          // An error occurred :(
-          console.log("ERROR: ", chrome.runtime.lastError);
-        } else {
-          console.log(response);
-        }
-      });
-    });
+
   }, 5000);
   }
 }
@@ -80,6 +103,12 @@ function sendUserInfo() {
     // Mark that the first-time registration is done.
     chrome.storage.local.set({registered: true});
     console.log('registered', registrationId);
+
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      openFaF(tabs);
+    });
+
+    currentState = 'close';
   })
   .fail(function() {
 
