@@ -38,6 +38,7 @@ function clickMsgToContent() {
 }
 
 function registerFaF(tabs) {
+  console.log(tabs);
    chrome.tabs.sendMessage(tabs[0].id, {method: 'openRegister'}, function(response) {
     if (chrome.runtime.lastError) {
       // An error occurred :(

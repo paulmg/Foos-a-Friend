@@ -1,0 +1,97 @@
+<template id="registrationTemplate">
+  <style>
+    a {
+      text-decoration: none;
+      padding: 20px;
+      background-color: #000;
+      color: white;
+      display: inline-block;
+
+      transition: all 200ms ease-in-out;
+    }
+
+    a:hover {
+      text-decoration: none;
+      color: #000;
+      background-color: #fff;
+    }
+
+    p {
+      margin: 0 0 10px;
+    }
+
+    h1 {
+      font-size: 38.5px;
+      margin: 10px 0;
+      font-family: inherit;
+      font-weight: bold;
+      line-height: 20px;
+      color: inherit;
+      text-rendering: optimizelegibility;
+    }
+
+    img {
+      max-width: 100%;
+      width: auto\9;
+      height: auto;
+      vertical-align: middle;
+      border: 0;
+      -ms-interpolation-mode: bicubic;
+    }
+
+    .foosafy-pick-row {
+      float: left;
+    }
+
+    .foosafy-pick-col {
+
+    }
+
+    .foosafy-pick-col img {
+      margin: 15px;
+    }
+
+
+    .foosafy-individual table {
+      max-width: 100%;
+      background-color: transparent;
+      border-collapse: collapse;
+      border-spacing: 0;
+    }
+
+    .foosafy-individual tr {
+
+    }
+
+    .foosafy-individual td {
+
+    }
+  </style>
+  <h1>Fill out yo Foos, Bitch</h1>
+  <section class="foosafy-fill">
+    Name
+    <br/><br/>
+    <input id="name" type="text" />
+    <br/><br/>
+    Email
+    <br/><br/>
+    <input id="email" type="text" />
+    <br/><br/>
+    <a id="submitRegister" href="#">Done with this shit</a>
+    <br/><br/>
+    <div id="status"></div>
+  </section>
+  <script>
+  $(document).ready(function() {
+    console.log('testing', chrome);
+  })
+
+  $('#submitRegister').on('click', function(event) {
+    event.preventDefault();
+
+    console.log('testere');
+    /* Act on the event */
+  });
+
+  </script>
+</template>

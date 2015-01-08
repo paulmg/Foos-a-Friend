@@ -11,7 +11,7 @@
   },
   "default_locale": "en",
   "background": {
-    "scripts": ["js/jquery/jquery.min.js", "js/angular/angular.min.js", "src/bg/background.js"],
+    "scripts": ["js/jquery/jquery.min.js", "src/bg/background.js"],
     "persistent": true
   },
   "options_page": "src/options/index.html",
@@ -32,7 +32,6 @@
       "matches": [ "https://*/*", "http://*/*" ],
       "js": [
         "js/jquery/jquery.min.js",
-        "js/angular/angular.min.js",
         "src/inject/content.js"
       ],
       "css": [
@@ -40,5 +39,8 @@
       ],
       "run_at": "document_end"
     }
+  ],
+  "web_accessible_resources": [
+    "src/inject/*"
   ]
 }

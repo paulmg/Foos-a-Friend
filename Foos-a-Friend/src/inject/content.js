@@ -22,115 +22,83 @@ function mainAppListener(request, sender, sendResponse) {
   console.log(request);
   // create main app
   if(request.method && (request.method == 'openApp')) {
-    $('body').append('<div id="foosafy" class="foosafy">\
-      <h1>Foos a Friend</h1>\
-      <section class="foosafy-pick">\
-        <div class="foosafy-pick-row">\
-          <div class="foosafy-pick-col"> 1 <img src="http://placehold.it/150x150" /></div>\
-          <div class="foosafy-pick-col"> 2 <img src="http://placehold.it/150x150" /></div>\
-        </div>\
-        <div class="foosafy-pick-row">\
-          <div class="foosafy-pick-col"><img src="http://placehold.it/150x150" /> 3</div>\
-          <div class="foosafy-pick-col"><img src="http://placehold.it/150x150" /> 4</div>\
-        </div>\
-        <div style="clear:both;"></div>\
-        <a id="clickRandom" class="foosafy-link-random" href="#">Pick Foosers at Random</a>\
-        <p>or</p>\
-        <p>Select Individual Players</p>\
-      </section>\
-      <section class="foosafy-individual">\
-        <table>\
-          <tr>\
-            <td style="width: 20%;">\
-              <img src="http://placehold.it/80x80" />\
-            </td>\
-            <td style="width: 40%;">\
-              Douche Stain\
-            </td>\
-            <td style="width: 40%;">\
-              <a class="foosafy-individual-add" href="#">ADD</a>\
-              <a class="foosafy-individual-invite" href="#">INVITE</a>\
-            </td>\
-          </tr>\
-          <tr>\
-            <td style="width: 20%;">\
-              <img src="http://placehold.it/80x80" />\
-            </td>\
-            <td style="width: 40%;">\
-              Ass Nuggets\
-            </td>\
-            <td style="width: 40%;">\
-              <a class="foosafy-individual-add" href="#">ADD</a>\
-              <a class="foosafy-individual-invite" href="#">INVITE</a>\
-            </td>\
-          </tr>\
-        </table>\
-      </section>\
-    </div>')
+    var foosafy = $('<div id="foosafy"></div>');
+    $('body').append(foosafy);
 
-    .delay(100).promise().done(function() {
-      $('#foosafy').addClass('open');
+    var template = foosafy.load(chrome.extension.getURL('src/inject/open.html'), function() {
+      var host = document.querySelector('#foosafy');
+
+      var shadow = host.createShadowRoot();
+      var templateNode = document.querySelector('#registrationTemplate');
+      var clone = document.importNode(templateNode.content, true);
+      $(shadow).append(clone).delay(100).promise().done(function() {
+        $('#foosafy').addClass('open');
+        //sendResponse2 = sendResponse;
+      });
+
+      var html = 'testing this crap';
+      sendResponse({ "htmlContent": html });
     });
-    var html = 'testing this crap';
-    sendResponse({ "htmlContent": html });
   } else if(request.method && (request.method == 'closeApp')) {
     $('#foosafy').removeClass('open').delay(400).promise().done(function() {
       $('#foosafy').remove();
     });
   } else if(request.method && (request.method == 'openRegister')) {
-    $('body').append('<div id="foosafyRegister" class="foosafy foosafy-register">\
-      <h1>Fill out yo Foos, Bitch</h1>\
-      <section class="foosafy-fill">\
-        Name\
-        <br/><br/>\
-        <input id="name" type="text" />\
-        <br/><br/>\
-        Email\
-        <br/><br/>\
-        <input id="email" type="text" />\
-        <br/><br/>\
-        <a id="submitRegister" href="#">Done with this shit</a>\
-        <br/><br/>\
-        <div id="status"></div>\
-      </section>\
-    </div>')
+    console.log('testReg');
+    var foosafy = $('<div id="foosafy"></div>');
+    $('body').append(foosafy);
+    var template = foosafy.load(chrome.extension.getURL('src/inject/registration.html'), function() {
+      var host = document.querySelector('#foosafy');
 
-    .delay(100).promise().done(function() {
-      $('#foosafyRegister').addClass('open');
-      //sendResponse2 = sendResponse;
+      var shadow = host.createShadowRoot();
+      var templateNode = document.querySelector('#registrationTemplate');
+      var clone = document.importNode(templateNode.content, true);
+
+      var submitBtn = $(clone.querySelector('#submitRegister'));
+
+
+
+      console.log($(clone.querySelector('#submitRegister')));
+      console.log(document.querySelector('#submitRegister'));
+      console.log(chrome);
+
+      $(shadow).append(clone).delay(100).promise().done(function() {
+        $('#foosafy').addClass('open');
+        console.log($('#submitRegister'));
+        submitBtn.click(function(e) {
+          e.preventDefault();
+
+          var nameVal = $(clone.querySelector('#name')).val();
+          var emailVal = $(clone.querySelector('#email')).val();
+          var status = $(clone.querySelector('#status'));
+          console.log(nameVal, emailVal);
+
+          if(nameVal !== '' && emailVal !== '') {
+            chrome.storage.sync.set({
+              email: emailVal,
+              name: nameVal
+            }, function() {
+              // Update status to let user know options were saved.
+              status.text('Options saved.');
+              setTimeout(function() {
+                status.text('');
+
+                chrome.runtime.sendMessage({ "method": "sendUserInfo", "email": emailVal, "name": nameVal });
+
+                $('#foosafyRegister').removeClass('open').delay(400).promise().done(function() {
+                  $('#foosafyRegister').remove();
+                });
+              }, 750);
+            });
+          } else { // info not there cause you're a dingbat
+            status.text('fill out the fucking info you shitbag');
+          }
+        })
+        //sendResponse2 = sendResponse;
+      });
     });
   }
 }
-
-// clicks //
-// first time register submission
-$('body').on('click', '#submitRegister', function() {
-  var nameVal = $('#name').val();
-  var emailVal = $('#email').val();
-  var status = $('#status');
-  console.log(nameVal, emailVal);
-
-  if(nameVal !== '' && emailVal !== '') {
-    chrome.storage.sync.set({
-      email: emailVal,
-      name: nameVal
-    }, function() {
-      // Update status to let user know options were saved.
-      status.text('Options saved.');
-      setTimeout(function() {
-        status.text('');
-
-        chrome.runtime.sendMessage({ "method": "sendUserInfo", "email": emailVal, "name": nameVal });
-
-        $('#foosafyRegister').removeClass('open').delay(400).promise().done(function() {
-          $('#foosafyRegister').remove();
-        });
-      }, 750);
-    });
-  } else { // info not there cause you're a dingbat
-    status.text('fill out the fucking info you shitbag');
-  }
-});
 
 // listeners //
 chrome.runtime.onMessage.addListener(mainAppListener);

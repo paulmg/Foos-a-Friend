@@ -1,0 +1,113 @@
+<template id="openTemplate">
+  <style>
+    a {
+      text-decoration: none;
+      padding: 20px;
+      background-color: #000;
+      color: white;
+      display: inline-block;
+
+      transition: all 200ms ease-in-out;
+    }
+
+    a:hover {
+      text-decoration: none;
+      color: #000;
+      background-color: #fff;
+    }
+
+    p {
+      margin: 0 0 10px;
+    }
+
+    h1 {
+      font-size: 38.5px;
+      margin: 10px 0;
+      font-family: inherit;
+      font-weight: bold;
+      line-height: 20px;
+      color: inherit;
+      text-rendering: optimizelegibility;
+    }
+
+    img {
+      max-width: 100%;
+      width: auto\9;
+      height: auto;
+      vertical-align: middle;
+      border: 0;
+      -ms-interpolation-mode: bicubic;
+    }
+
+    .foosafy-pick-row {
+      float: left;
+    }
+
+    .foosafy-pick-col {
+
+    }
+
+    .foosafy-pick-col img {
+      margin: 15px;
+    }
+
+
+    .foosafy-individual table {
+      max-width: 100%;
+      background-color: transparent;
+      border-collapse: collapse;
+      border-spacing: 0;
+    }
+
+    .foosafy-individual tr {
+
+    }
+
+    .foosafy-individual td {
+
+    }
+  </style>
+  <h1>Foos a Friend</h1>
+  <section class="foosafy-pick">
+    <div class="foosafy-pick-row">
+      <div class="foosafy-pick-col"> 1 <img src="http://placehold.it/150x150" /></div>
+      <div class="foosafy-pick-col"> 2 <img src="http://placehold.it/150x150" /></div>
+    </div>
+    <div class="foosafy-pick-row">
+      <div class="foosafy-pick-col"><img src="http://placehold.it/150x150" /> 3</div>
+      <div class="foosafy-pick-col"><img src="http://placehold.it/150x150" /> 4</div>
+    </div>
+    <div style="clear:both;"></div>
+    <a id="clickRandom" class="foosafy-link-random" href="#">Pick Foosers at Random</a>
+    <p>or</p>
+    <p>Select Individual Players</p>
+  </section>
+  <section class="foosafy-individual">
+    <table>
+      <tr>
+        <td style="width: 20%;">
+          <img src="http://placehold.it/80x80" />
+        </td>
+        <td style="width: 40%;">
+          Douche Stain
+        </td>
+        <td style="width: 40%;">
+          <a class="foosafy-individual-add" href="#">ADD</a>
+          <a class="foosafy-individual-invite" href="#">INVITE</a>
+        </td>
+      </tr>
+      <tr>
+        <td style="width: 20%;">
+          <img src="http://placehold.it/80x80" />
+        </td>
+        <td style="width: 40%;">
+          Ass Nuggets
+        </td>
+        <td style="width: 40%;">
+          <a class="foosafy-individual-add" href="#">ADD</a>
+          <a class="foosafy-individual-invite" href="#">INVITE</a>
+        </td>
+      </tr>
+    </table>
+  </section>
+</template>

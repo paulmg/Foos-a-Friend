@@ -1,4 +1,4 @@
-.foosafy {
+#foosafy {
   background-color: lightgrey !important;
   position: fixed !important;
   z-index: 99999 !important;
@@ -17,73 +17,7 @@
   transition: all 400ms ease-in-out !important;
 }
 
-.foosafy.open {
+#foosafy.open {
   right: 0 !important;
 }
 
-.foosafy a {
-  text-decoration: none !important;
-  padding: 20px !important;
-  background-color: #000 !important;
-  color: white !important;
-  display: inline-block !important;
-
-  transition: all 200ms ease-in-out !important;
-}
-
-.foosafy a:hover {
-  text-decoration: none !important;
-  color: #000 !important;
-  background-color: #fff !important;
-}
-
-.foosafy p {
-  margin: 0 0 10px !important;
-}
-
-.foosafy h1 {
-  font-size: 38.5px !important;
-  margin: 10px 0 !important;
-  font-family: inherit !important;
-  font-weight: bold !important;
-  line-height: 20px !important;
-  color: inherit !important;
-  text-rendering: optimizelegibility !important;
-}
-
-.foosafy img {
-  max-width: 100% !important;
-  width: auto\9 !important;
-  height: auto !important;
-  vertical-align: middle !important;
-  border: 0 !important;
-  -ms-interpolation-mode: bicubic !important;
-}
-
-.foosafy-pick-row {
-  float: left !important;
-}
-
-.foosafy-pick-col {
-
-}
-
-.foosafy-pick-col img {
-  margin: 15px !important;
-}
-
-
-.foosafy-individual table {
-  max-width: 100% !important;
-  background-color: transparent !important;
-  border-collapse: collapse !important;
-  border-spacing: 0 !important;
-}
-
-.foosafy-individual tr {
-
-}
-
-.foosafy-individual td {
-
-}
