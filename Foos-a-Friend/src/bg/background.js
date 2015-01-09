@@ -94,9 +94,9 @@ function registerCallback(regId) {
   }
 }
 function sendUserInfo() {
-  console.log('sendUserInfo');
+  console.log('registeringUser');
   var data = {regId: registrationId, name: name, email: email};
-  $.post('http://peaceful-castle-1644.herokuapp.com/setUserInfo.php', data, function() {
+  $.post('http://peaceful-castle-1644.herokuapp.com/registerUser.php', data, function() {
 
   })
   .done(function(response) {

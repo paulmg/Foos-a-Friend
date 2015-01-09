@@ -39,59 +39,24 @@
       -ms-interpolation-mode: bicubic;
     }
 
-    .foosafy-pick-row {
-      float: left;
-    }
-
-    .foosafy-pick-col {
-
-    }
-
-    .foosafy-pick-col img {
-      margin: 15px;
-    }
-
-
-    .foosafy-individual table {
-      max-width: 100%;
-      background-color: transparent;
-      border-collapse: collapse;
-      border-spacing: 0;
-    }
-
-    .foosafy-individual tr {
-
-    }
-
-    .foosafy-individual td {
-
+    .status {
+      color: red;
     }
   </style>
   <h1>Fill out yo Foos, Bitch</h1>
-  <section class="foosafy-fill">
+  <section class="foosafy-register">
     Name
     <br/><br/>
-    <input id="name" type="text" />
+    <input id="nameInput" type="text" />
     <br/><br/>
     Email
     <br/><br/>
-    <input id="email" type="text" />
+    <input id="emailInput" type="text" />
     <br/><br/>
     <a id="submitRegister" href="#">Done with this shit</a>
     <br/><br/>
-    <div id="status"></div>
+    <div class="status">
+      <content></content>
+    </div>
   </section>
-  <script>
-  $(document).ready(function() {
-    console.log('testing', chrome);
-  })
-
-  $('#submitRegister').on('click', function(event) {
-    event.preventDefault();
-
-    console.log('testere');
-    /* Act on the event */
-  });
-
-  </script>
 </template>
