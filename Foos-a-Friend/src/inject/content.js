@@ -36,11 +36,11 @@ function mainAppListener(request, sender, sendResponse) {
 
       var randomBtn = clone.querySelector('#clickRandom');
       // btn arrays
-      var addBtn = ;
-      var inviteBtn = ;
+      //var addBtn = ;
+      //var inviteBtn = ;
 
-      $(randomBtn).on('click', function() {
-
+      $(randomBtn).on('click', function(e) {
+        e.preventDefault();
       });
 
       // foreach btn arrays
@@ -90,7 +90,7 @@ function mainAppListener(request, sender, sendResponse) {
             $('#foosafy').text('Options saved.');
 
             setTimeout(function() {
-              chrome.runtime.sendMessage({ "method": "sendUserInfo", "email": emailVal, "name": nameVal });
+              chrome.runtime.sendMessage({ "method": "registerUser", "email": emailVal, "name": nameVal });
 
               $('#foosafy').removeClass('open').delay(400).promise().done(function() {
                 $('#foosafy').remove();

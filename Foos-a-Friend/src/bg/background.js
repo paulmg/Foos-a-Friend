@@ -72,10 +72,12 @@ function firstTimeRegistration() {
     register();
   });
 }
+
 function register() {
   var senderId = '35518340190';
   chrome.gcm.register([senderId], registerCallback);
 }
+
 function registerCallback(regId) {
   registrationId = regId;
 
@@ -93,29 +95,6 @@ function registerCallback(regId) {
   }, 5000);
   }
 }
-function sendUserInfo() {
-  console.log('registeringUser');
-  var data = {regId: registrationId, name: name, email: email};
-  $.post('http://peaceful-castle-1644.herokuapp.com/registerUser.php', data, function() {
-
-  })
-  .done(function(response) {
-    console.log(response);
-    // Mark that the first-time registration is done.
-    chrome.storage.local.set({registered: true});
-    console.log('registered', registrationId);
-
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      openFaF(tabs);
-    });
-
-    currentState = 'close';
-  })
-  .fail(function() {
-
-  });
-}
-
 
 function messageReceived(message) {
   // A message is an object with a data property that
@@ -156,16 +135,47 @@ chrome.browserAction.onClicked.addListener(clickMsgToContent);
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    console.log(request.method);
-    if (request.method && (request.method == 'sendUserInfo')) {
-      console.log('test');
-      name = request.name;
-      email = request.email;
+    if (request.method ) {
+      switch(request.method) {
+        case 'registerUser':
+          name = request.name;
+          email = request.email;
 
-      sendUserInfo();
+          registerUser();
+
+          break;
+        case 'getAllUsers':
+
+          getAllusers();
+
+          break;
+      }
     }
   }
 );
+
+function registerUser() {
+  console.log('registeringUser');
+  var data = {regId: registrationId, name: name, email: email};
+  $.post('http://peaceful-castle-1644.herokuapp.com/registerUser.php', data, function() {
+
+  })
+  .done(function(response) {
+    console.log(response);
+    // Mark that the first-time registration is done.
+    chrome.storage.local.set({registered: true});
+    console.log('registered', registrationId);
+
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      openFaF(tabs);
+    });
+
+    currentState = 'close';
+  })
+  .fail(function() {
+
+  });
+}
 
 // Set up a listener for GCM message event.
 chrome.gcm.onMessage.addListener(messageReceived);

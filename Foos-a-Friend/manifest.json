@@ -1,9 +1,9 @@
 {
   "name": "Foos a Friend",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "manifest_version": 2,
   "description": "Foos the shit out of your friends",
-  "homepage_url": "http://bigspaceship.com",
+  "homepage_url": "http://www.paulgraffix.com",
   "icons": {
     "16": "icons/faf_16.png",
     "48": "icons/faf_48.png",
