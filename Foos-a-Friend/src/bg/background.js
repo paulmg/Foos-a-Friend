@@ -11,7 +11,17 @@ function clickMsgToContent() {
 
     switch(currentState) {
       case 'register':
-        registerFaF(tabs);
+        // stop register if options already filled out
+        chrome.storage.local.get("registered", function(result) {
+          // If already registered, bail out.
+          if (result["registered"]) {
+            openFaF(tabs);
+
+            currentState = 'close';
+          } else {
+            registerFaF(tabs);
+          }
+        }
 
         break;
 
@@ -50,6 +60,8 @@ function registerFaF(tabs) {
 }
 
 function openFaF(tabs) {
+  // maybe do lookup of users and send it as array before opening
+  // if not then ajax in users in content script
   chrome.tabs.sendMessage(tabs[0].id, {method: 'openApp', name: name}, function(response) {
     if (chrome.runtime.lastError) {
       // An error occurred :(
@@ -157,7 +169,7 @@ chrome.runtime.onMessage.addListener(
 function registerUser() {
   console.log('registeringUser');
   var data = {regId: registrationId, name: name, email: email};
-  $.post('http://peaceful-castle-1644.herokuapp.com/registerUser.php', data, function() {
+  $.post('http://stormy-brushlands-5186.herokuapp.com/registerUser.php', data, function() {
 
   })
   .done(function(response) {

@@ -59,7 +59,6 @@ function mainAppListener(request, sender, sendResponse) {
       $('#foosafy').remove();
     });
   } else if(request.method && (request.method == 'openRegister')) {
-    console.log('testReg');
     var foosafy = $('<div id="foosafy"></div>');
     $('body').append(foosafy);
 
