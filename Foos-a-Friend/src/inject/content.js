@@ -33,7 +33,6 @@ function mainAppListener(request, sender, sendResponse) {
       var clone = document.importNode(templateNode.content, true);
       templateNode.remove();
 
-
       var randomBtn = clone.querySelector('#clickRandom');
       // btn arrays
       //var addBtn = ;

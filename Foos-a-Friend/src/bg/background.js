@@ -62,6 +62,10 @@ function registerFaF(tabs) {
 function openFaF(tabs) {
   // maybe do lookup of users and send it as array before opening
   // if not then ajax in users in content script
+  getAllUsers(sendOpenMessage);
+}
+
+function sendOpenMessage(tabs) {
   chrome.tabs.sendMessage(tabs[0].id, {method: 'openApp', name: name}, function(response) {
     if (chrome.runtime.lastError) {
       // An error occurred :(
@@ -73,6 +77,17 @@ function openFaF(tabs) {
   });
 }
 
+function sendAllUsers(tabs) {
+  chrome.tabs.sendMessage(tabs[0].id, {method: 'usersFetched', users: users}, function(response) {
+    if (chrome.runtime.lastError) {
+      // An error occurred :(
+      console.log("ERROR: ", chrome.runtime.lastError);
+    } else {
+      // Do something useful with the HTML content
+      console.log(response);
+    }
+  });
+}
 
 function firstTimeRegistration() {
   chrome.storage.local.get("registered", function(result) {
@@ -86,7 +101,7 @@ function firstTimeRegistration() {
 }
 
 function register() {
-  var senderId = '35518340190';
+  var senderId = '35518340190'; //google app id
   chrome.gcm.register([senderId], registerCallback);
 }
 
@@ -100,11 +115,6 @@ function registerCallback(regId) {
     // registration later.
     console.log("Registration failed: " + chrome.runtime.lastError.message);
     return;
-  } else {
-    //todo: set it to btn click instead
-    setTimeout(function() {
-
-  }, 5000);
   }
 }
 
@@ -135,6 +145,7 @@ function getNotificationId() {
   return id.toString();
 }
 
+// todo: should switch to calling only on onInstalled?
 firstTimeRegistration();
 
 // listeners //
@@ -161,6 +172,12 @@ chrome.runtime.onMessage.addListener(
           getAllusers();
 
           break;
+        case 'inviteUser':
+
+          inviteUser(request.email);
+
+          break;
+
       }
     }
   }
@@ -185,18 +202,29 @@ function registerUser() {
     currentState = 'close';
   })
   .fail(function() {
+    console.log('failed to post to heroku register user');
+  });
+}
+
+function getAllUsers(callback) {
+  console.log('getting all users');
+
+  $.get('http://stormy-brushlands-5186.herokuapp.com/getAllUsers.php')
+  .done(function(response) {
+    console.log(response);
+
+    callback();
+
+    // chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    //   openFaF(tabs);
+    // });
+
+    // currentState = 'close';
+  })
+  .fail(function() {
 
   });
 }
 
 // Set up a listener for GCM message event.
 chrome.gcm.onMessage.addListener(messageReceived);
-
-
-//example of using a message handler from the inject scripts
-// chrome.extension.onMessage.addListener(
-//   function(request, sender, sendResponse) {
-//     //chrome.pageAction.show(sender.tab.id);
-//     sendResponse();
-//   }
-// );
