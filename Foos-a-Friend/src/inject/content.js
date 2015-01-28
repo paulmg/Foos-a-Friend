@@ -15,13 +15,15 @@ chrome.extension.sendMessage({}, function(response) {
 });
 
 
-var sendResponse2;
+var foo;
 
 // methods //
 function mainAppListener(request, sender, sendResponse) {
   console.log(request);
   // create main app
   if(request.method && (request.method == 'openApp')) {
+    console.log(request.users);
+
     var foosafy = $('<div id="foosafy"></div>');
     $('body').append(foosafy);
 
@@ -33,14 +35,60 @@ function mainAppListener(request, sender, sendResponse) {
       var clone = document.importNode(templateNode.content, true);
       templateNode.remove();
 
-      var randomBtn = clone.querySelector('#clickRandom');
-      // btn arrays
-      //var addBtn = ;
-      //var inviteBtn = ;
+      var userList = clone.querySelector('#foosafyUserList');
+      console.log($(userList));
 
+      var users = $.parseJSON(request.users);
+      $.each(users, function(key, value) {
+        var user = "<tr> \
+          <td style='width: 20%;'> \
+            <img src='" + value.gravatar + "' /> \
+          </td> \
+          <td style='width: 40%;'> \
+            " + value.name + " \
+          </td> \
+          <td style='width: 40%;'> \
+            <a id='foosafyAddUser' class='foosafy-individual-add' href='#'>ADD</a> \
+            <a id='foosafyInviteUser' data-email='" + value.email + "' data-regid='" + value.regId + "' class='foosafy-individual-invite' href='#'>INVITE</a> \
+          </td> \
+        </tr>";
+
+        $(userList).append(user);
+      });
+
+      var randomBtn = clone.querySelector('#clickRandom');
       $(randomBtn).on('click', function(e) {
         e.preventDefault();
       });
+      
+      // btn arrays
+      var addBtnArray = clone.querySelectorAll('.foosafy-individual-add');
+      $(addBtnArray).each(function(key, value) {
+        $(this).on('click', function(e) {
+          e.preventDefault();
+
+          console.log('test', $(this))
+        });
+      });
+
+      var inviteBtnArray = clone.querySelectorAll('.foosafy-individual-invite');
+      $(inviteBtnArray).each(function(key, value) {
+        $(this).on('click', function(e) {
+          e.preventDefault();
+
+          var emailVal = $(this).data("email");
+          var regIdVal = $(this).data("regid");
+
+          console.log(regIdVal)
+
+          chrome.runtime.sendMessage({ "method": "inviteUser", "email": emailVal, "regId": regIdVal });
+
+          // create invite sent
+
+          console.log('test', $(this))
+        });
+      });
+      
 
       // foreach btn arrays
 

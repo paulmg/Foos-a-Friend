@@ -21,24 +21,21 @@ function clickMsgToContent() {
           } else {
             registerFaF(tabs);
           }
-        }
+        });
 
         break;
-
       case 'open':
         openFaF(tabs);
 
         currentState = 'close';
 
         break;
-
       case 'close':
         chrome.tabs.sendMessage(tabs[0].id, {method: 'closeApp'}, function(response) {});
 
         currentState = 'open';
 
         break;
-
       default:
         registerFaF(tabs);
 
@@ -62,11 +59,31 @@ function registerFaF(tabs) {
 function openFaF(tabs) {
   // maybe do lookup of users and send it as array before opening
   // if not then ajax in users in content script
-  getAllUsers(sendOpenMessage);
+  getAllUsers(sendOpenMessage, tabs);
 }
 
-function sendOpenMessage(tabs) {
-  chrome.tabs.sendMessage(tabs[0].id, {method: 'openApp', name: name}, function(response) {
+function getAllUsers(callback, tabs) {
+  console.log('getting all users');
+
+  $.get('http://stormy-brushlands-5186.herokuapp.com/getAllUsers.php')
+  .done(function(response) {
+    console.log(response);
+
+    callback(tabs, response);
+
+    // chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    //   openFaF(tabs);
+    // });
+
+    // currentState = 'close';
+  })
+  .fail(function() {
+
+  });
+}
+
+function sendOpenMessage(tabs, users) {
+  chrome.tabs.sendMessage(tabs[0].id, {method: 'openApp', users: users}, function(response) {
     if (chrome.runtime.lastError) {
       // An error occurred :(
       console.log("ERROR: ", chrome.runtime.lastError);
@@ -168,13 +185,11 @@ chrome.runtime.onMessage.addListener(
 
           break;
         case 'getAllUsers':
-
           getAllusers();
 
           break;
         case 'inviteUser':
-
-          inviteUser(request.email);
+          inviteUser(request.email, request.regId);
 
           break;
 
@@ -206,25 +221,22 @@ function registerUser() {
   });
 }
 
-function getAllUsers(callback) {
-  console.log('getting all users');
+function inviteUser(email, regId) {
+  console.log('invitingUser');
+  var data = {regId: regId, email: email};
+  $.post('http://stormy-brushlands-5186.herokuapp.com/inviteUser.php', data, function() {
 
-  $.get('http://stormy-brushlands-5186.herokuapp.com/getAllUsers.php')
+  })
   .done(function(response) {
     console.log(response);
-
-    callback();
-
-    // chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    //   openFaF(tabs);
-    // });
-
-    // currentState = 'close';
+    // Mark that the first-time registration is done.
+    
   })
   .fail(function() {
-
+    console.log('failed to post to heroku invite user');
   });
 }
+
 
 // Set up a listener for GCM message event.
 chrome.gcm.onMessage.addListener(messageReceived);
