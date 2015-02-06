@@ -49,7 +49,7 @@ function mainAppListener(request, sender, sendResponse) {
           </td> \
           <td style='width: 40%;'> \
             <a id='foosafyAddUser' class='foosafy-individual-add' href='#'>ADD</a> \
-            <a id='foosafyInviteUser' data-email='" + value.email + "' data-regid='" + value.regId + "' class='foosafy-individual-invite' href='#'>INVITE</a> \
+            <a id='foosafyInviteUser' data-id='" + value._id.$oid + "' data-email='" + value.email + "' data-regid='" + value.regId + "' class='foosafy-individual-invite' href='#'>INVITE</a> \
           </td> \
         </tr>";
 
@@ -60,14 +60,20 @@ function mainAppListener(request, sender, sendResponse) {
       $(randomBtn).on('click', function(e) {
         e.preventDefault();
       });
-      
+
       // btn arrays
       var addBtnArray = clone.querySelectorAll('.foosafy-individual-add');
       $(addBtnArray).each(function(key, value) {
         $(this).on('click', function(e) {
           e.preventDefault();
 
-          console.log('test', $(this))
+          console.log('test', $(this));
+          // send player to game collection user array
+          var playerId = $(this).data("id");
+          chrome.runtime.sendMessage({ "method": "addUser", "id": playerId });
+
+          // populate the top section depending on which player spot is open
+
         });
       });
 
@@ -88,7 +94,7 @@ function mainAppListener(request, sender, sendResponse) {
           console.log('test', $(this))
         });
       });
-      
+
 
       // foreach btn arrays
 
@@ -146,7 +152,7 @@ function mainAppListener(request, sender, sendResponse) {
         } else { // info not there cause you're a dingbat
           $('#foosafy').text('Fill it out, shitlord.');
         }
-      })
+      });
 
       $(shadow).append(clone).delay(100).promise().done(function() {
         $('#foosafy').addClass('open');

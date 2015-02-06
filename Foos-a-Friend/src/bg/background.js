@@ -229,8 +229,22 @@ function inviteUser(email, regId) {
   })
   .done(function(response) {
     console.log(response);
-    // Mark that the first-time registration is done.
-    
+
+  })
+  .fail(function() {
+    console.log('failed to post to heroku invite user');
+  });
+}
+
+function addUser(playerId) {
+  console.log('addingUser');
+  var data = {};
+  $.post('http://stormy-brushlands-5186.herokuapp.com/addUser.php', data, function() {
+
+  })
+  .done(function(response) {
+    console.log(response);
+
   })
   .fail(function() {
     console.log('failed to post to heroku invite user');
