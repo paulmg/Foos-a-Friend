@@ -1,15 +1,22 @@
 // Saves options to chrome.storage
 function save_options() {
   var email = document.getElementById('email').value;
-  var name = document.getElementById('name').value;
+  var avatar = document.getElementById('avatar').value;
+  var firstName = document.getElementById('firstName').value;
+  var lastName = document.getElementById('lastName').value;
+  var nickName = document.getElementById('nickName').value;
 
   chrome.storage.sync.set({
     email: email,
-    name: name
+    avatar: avatar,
+    firstName: firstName,
+    lastName: lastName,
+    nickName: nickName
   }, function() {
     // Update status to let user know options were saved.
     var status = document.getElementById('status');
     status.textContent = 'Options saved.';
+
     setTimeout(function() {
       status.textContent = '';
     }, 750);
@@ -22,10 +29,16 @@ function restore_options() {
   // Use default values
   chrome.storage.sync.get({
     email: 'email',
-    name: 'name'
+    avatar: 'avatar',
+    firstName: 'firstName',
+    lastName: 'lastName',
+    nickName: 'nickName'
   }, function(items) {
     document.getElementById('email').value = items.email;
-    document.getElementById('name').value = items.name;
+    document.getElementById('avatar').value = items.avatar;
+    document.getElementById('firstName').value = items.firstName;
+    document.getElementById('lastName').value = items.lastName;
+    document.getElementById('nickName').value = items.nickName;
   });
 }
 

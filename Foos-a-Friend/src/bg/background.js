@@ -1,6 +1,6 @@
 // variables //
 var currentState = 'register';
-var registrationId, name, email;
+var registrationId, firstName, lastName, nickName, email, avatar, myNotificationId;
 
 console.log(currentState);
 
@@ -71,14 +71,10 @@ function getAllUsers(callback, tabs) {
 
     callback(tabs, response);
 
-    // chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    //   openFaF(tabs);
-    // });
-
     // currentState = 'close';
   })
-  .fail(function() {
-
+  .fail(function(xhr, textStatus, errorThrown) {
+    console.log('did not get all users', xhr.responseText, textStatus, errorThrown)
   });
 }
 
@@ -149,17 +145,69 @@ function messageReceived(message) {
   console.log("Message received: " + messageString);
 
   // Pop up a notification to show the GCM message.
-  chrome.notifications.create(getNotificationId(), {
+  chrome.notifications.create("", {
     title: 'GCM Message',
-    //iconUrl: 'gcm_128.png',
+    iconUrl: chrome.extension.getURL('icons/faf_128.png'),
     type: 'basic',
+    priority: 2,
+    buttons: [{
+      title: "Yes, let's Foos"
+    }, {
+      title: "No, I'm lame"
+    }],
     message: messageString
-  }, function() {});
+  },  function(id) {
+    myNotificationID = id;
+  });
 }
-// Returns a new notification ID used in the notification.
-function getNotificationId() {
-  var id = Math.floor(Math.random() * 9007199254740992) + 1;
-  return id.toString();
+
+
+/* Respond to the user's clicking one of the buttons */
+chrome.notifications.onButtonClicked.addListener(function(notifId, btnIdx) {
+  if (notifId === myNotificationID) {
+    if (btnIdx === 0) {
+      console.log('click accept')
+      inviteAccepted();
+    } else if (btnIdx === 1) {
+      console.log('click decline')
+      inviteDeclined();
+    }
+  }
+});
+
+/* Add this to also handle the user's clicking
+ * the small 'x' on the top right corner */
+chrome.notifications.onClosed.addListener(function() {
+  inviteDeclined();
+});
+
+function inviteAccepted() {
+  console.log('userAccepted');
+  var data = {userId: userId};
+  $.post('http://stormy-brushlands-5186.herokuapp.com/addUser.php', data, function() {
+
+  })
+  .done(function(response) {
+    console.log(response);
+  })
+  .fail(function(xhr, textStatus, errorThrown) {
+    console.log('failed to post to heroku add user', xhr.responseText, textStatus, errorThrown);
+  });
+}
+
+// Handle the user's rejection
+function inviteDeclined() {
+  console.log('userDeclined');
+  var data = {};
+  $.post('http://stormy-brushlands-5186.herokuapp.com/inviteDeclined.php', data, function() {
+
+  })
+  .done(function(response) {
+    console.log(response);
+  })
+  .fail(function(xhr, textStatus, errorThrown) {
+    console.log('failed to post to heroku invite declined', xhr.responseText, textStatus, errorThrown);
+  });
 }
 
 // todo: should switch to calling only on onInstalled?
@@ -178,7 +226,9 @@ chrome.runtime.onMessage.addListener(
     if (request.method ) {
       switch(request.method) {
         case 'registerUser':
-          name = request.name;
+          firstName = request.firstName;
+          lastName = request.lastName;
+          nickName = request.nickName;
           email = request.email;
 
           registerUser();
@@ -192,7 +242,6 @@ chrome.runtime.onMessage.addListener(
           inviteUser(request.email, request.regId);
 
           break;
-
       }
     }
   }
@@ -200,7 +249,7 @@ chrome.runtime.onMessage.addListener(
 
 function registerUser() {
   console.log('registeringUser');
-  var data = {regId: registrationId, name: name, email: email};
+  var data = {regId: registrationId, firstName: firstName, lastName: lastName, nickName: nickName, email: email};
   $.post('http://stormy-brushlands-5186.herokuapp.com/registerUser.php', data, function() {
 
   })
@@ -216,8 +265,8 @@ function registerUser() {
 
     currentState = 'close';
   })
-  .fail(function() {
-    console.log('failed to post to heroku register user');
+  .fail(function(xhr, textStatus, errorThrown) {
+    console.log('failed to post to heroku register user', xhr.responseText, textStatus, errorThrown);
   });
 }
 
@@ -231,14 +280,14 @@ function inviteUser(email, regId) {
     console.log(response);
 
   })
-  .fail(function() {
-    console.log('failed to post to heroku invite user');
+  .fail(function(xhr, textStatus, errorThrown) {
+    console.log('failed to post to heroku invite user', xhr.responseText, textStatus, errorThrown);
   });
 }
 
 function addUser(playerId) {
   console.log('addingUser');
-  var data = {};
+  var data = [playerId];
   $.post('http://stormy-brushlands-5186.herokuapp.com/addUser.php', data, function() {
 
   })
@@ -246,8 +295,8 @@ function addUser(playerId) {
     console.log(response);
 
   })
-  .fail(function() {
-    console.log('failed to post to heroku invite user');
+  .fail(function(xhr, textStatus, errorThrown) {
+    console.log('failed to post to heroku invite user', xhr.responseText, textStatus, errorThrown);
   });
 }
 

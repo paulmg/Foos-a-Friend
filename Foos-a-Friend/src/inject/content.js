@@ -40,16 +40,18 @@ function mainAppListener(request, sender, sendResponse) {
 
       var users = $.parseJSON(request.users);
       $.each(users, function(key, value) {
+        console.log(value);
+
         var user = "<tr> \
           <td style='width: 20%;'> \
-            <img src='" + value.gravatar + "' /> \
+            <img src='" + value.avatar + "' /> \
           </td> \
           <td style='width: 40%;'> \
-            " + value.name + " \
+            " + value.firstName + " \"" + value.nickName + "\" " + value.lastName + " \
           </td> \
           <td style='width: 40%;'> \
             <a id='foosafyAddUser' class='foosafy-individual-add' href='#'>ADD</a> \
-            <a id='foosafyInviteUser' data-id='" + value._id.$oid + "' data-email='" + value.email + "' data-regid='" + value.regId + "' class='foosafy-individual-invite' href='#'>INVITE</a> \
+            <a id='foosafyInviteUser' data-id='" + value._id.$id + "' data-email='" + value.email + "' data-regid='" + value.regId + "' class='foosafy-individual-invite' href='#'>INVITE</a> \
           </td> \
         </tr>";
 
@@ -95,9 +97,7 @@ function mainAppListener(request, sender, sendResponse) {
         });
       });
 
-
       // foreach btn arrays
-
 
       $(shadow).append(clone).promise().done(function() {
         $('#foosafy').addClass('open');
@@ -124,25 +124,34 @@ function mainAppListener(request, sender, sendResponse) {
       templateNode.remove();
 
       var submitBtn = clone.querySelector('#submitRegister');
-      var nameInput = clone.querySelector('#nameInput');
+      var firstNameInput = clone.querySelector('#firstNameInput');
+      var lastNameInput = clone.querySelector('#lastNameInput');
+      var nickNameInput = clone.querySelector('#nickNameInput');
       var emailInput = clone.querySelector('#emailInput');
 
       $(submitBtn).on('click', function(e) {
         e.preventDefault();
 
-        var nameVal = $(nameInput).val();
+        var firstNameVal = $(firstNameInput).val();
+        var lastNameVal = $(lastNameInput).val();
+        var nickNameVal = $(nickNameInput).val();
         var emailVal = $(emailInput).val();
 
-        if(typeof(nameVal) !== 'undefined' && nameVal !== '' && typeof(emailVal) !== 'undefined' && emailVal !== '') {
+        if(typeof(firstNameVal) !== 'undefined' && firstNameVal !== '' &&
+          typeof(lastNameVal) !== 'undefined' && lastNameVal !== '' &&
+          typeof(nickNameVal) !== 'undefined' && nickNameVal !== '' &&
+          typeof(emailVal) !== 'undefined' && emailVal !== '') {
           chrome.storage.sync.set({
             email: emailVal,
-            name: nameVal
+            firstName: firstNameVal,
+            lastName: lastNameVal,
+            nickName: nickNameVal
           }, function() {
             // Update status to let user know options were saved.
             $('#foosafy').text('Options saved.');
 
             setTimeout(function() {
-              chrome.runtime.sendMessage({ "method": "registerUser", "email": emailVal, "name": nameVal });
+              chrome.runtime.sendMessage({ "method": "registerUser", "email": emailVal, "firstName": firstNameVal, "lastName": lastNameVal, "nickName": nickNameVal });
 
               $('#foosafy').removeClass('open').delay(400).promise().done(function() {
                 $('#foosafy').remove();
