@@ -184,7 +184,7 @@ chrome.notifications.onClosed.addListener(function() {
 function inviteAccepted() {
   console.log('userAccepted');
   var data = {userId: userId};
-  $.post('http://stormy-brushlands-5186.herokuapp.com/addUser.php', data, function() {
+  $.post('http://stormy-brushlands-5186.herokuapp.com/addPlayer.php', data, function() {
 
   })
   .done(function(response) {
@@ -242,6 +242,8 @@ chrome.runtime.onMessage.addListener(
           inviteUser(request.email, request.regId);
 
           break;
+        case 'addPlayer':
+          addPlayer(request.userId);
       }
     }
   }
@@ -285,10 +287,10 @@ function inviteUser(email, regId) {
   });
 }
 
-function addUser(playerId) {
+function addPlayer(playerId) {
   console.log('addingUser');
   var data = [playerId];
-  $.post('http://stormy-brushlands-5186.herokuapp.com/addUser.php', data, function() {
+  $.post('http://stormy-brushlands-5186.herokuapp.com/addPlayer.php', data, function() {
 
   })
   .done(function(response) {

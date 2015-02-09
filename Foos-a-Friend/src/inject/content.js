@@ -27,7 +27,7 @@ function mainAppListener(request, sender, sendResponse) {
     var foosafy = $('<div id="foosafy"></div>');
     $('body').append(foosafy);
 
-    var template = foosafy.load(chrome.extension.getURL('src/inject/open.html'), function() {
+    var template = foosafy.load(chrome.extension.getURL('src/inject/main.html'), function() {
       var host = document.querySelector('#foosafy');
 
       var shadow = host.createShadowRoot();
@@ -35,25 +35,28 @@ function mainAppListener(request, sender, sendResponse) {
       var clone = document.importNode(templateNode.content, true);
       templateNode.remove();
 
-      var userList = clone.querySelector('#foosafyUserList');
-      console.log($(userList));
+      // player section
+      var playersList = clone.querySelector('#foosafyPlayersList');
+      var players = playersList.querySelectorAll('.foosafy-pick-col');
 
+      // user section
+      var userList = clone.querySelector('#foosafyUserList');
       var users = $.parseJSON(request.users);
       $.each(users, function(key, value) {
         console.log(value);
 
-        var user = "<tr> \
-          <td style='width: 20%;'> \
-            <img src='" + value.avatar + "' /> \
+        var user = '<tr> \
+          <td style="width: 20%;"> \
+            <img src="' + value.avatar + '" /> \
           </td> \
-          <td style='width: 40%;'> \
-            " + value.firstName + " \"" + value.nickName + "\" " + value.lastName + " \
+          <td style="width: 40%;"> \
+            ' + value.firstName + ' "' + value.nickName + '" ' + value.lastName + ' \
           </td> \
-          <td style='width: 40%;'> \
-            <a id='foosafyAddUser' class='foosafy-individual-add' href='#'>ADD</a> \
-            <a id='foosafyInviteUser' data-id='" + value._id.$id + "' data-email='" + value.email + "' data-regid='" + value.regId + "' class='foosafy-individual-invite' href='#'>INVITE</a> \
+          <td style="width: 40%;"> \
+            <a id="foosafyAddUser" data-id="' + value.id + '" data-avatar="' + value.avatar + '" class="foosafy-individual-add"  href="#">ADD</a> \
+            <a id="foosafyInviteUser" data-id="' + value.id + '" data-email="' + value.email + '" data-regid="' + value.regId + '" class="foosafy-individual-invite" href="#">INVITE</a> \
           </td> \
-        </tr>";
+        </tr>';
 
         $(userList).append(user);
       });
@@ -61,6 +64,16 @@ function mainAppListener(request, sender, sendResponse) {
       var randomBtn = clone.querySelector('#clickRandom');
       $(randomBtn).on('click', function(e) {
         e.preventDefault();
+
+        // check how many players left, grab array of ids, send user invite per id
+
+      });
+
+      var closeBtn = clone.querySelector('#closeFoosafyBtn');
+      $(closeBtn).on('click', function(e) {
+        e.preventDefault();
+
+
       });
 
       // btn arrays
@@ -70,12 +83,25 @@ function mainAppListener(request, sender, sendResponse) {
           e.preventDefault();
 
           console.log('test', $(this));
-          // send player to game collection user array
-          var playerId = $(this).data("id");
-          chrome.runtime.sendMessage({ "method": "addUser", "id": playerId });
+          // set user to playing
+          var userId = $(this).data("id");
+          chrome.runtime.sendMessage({ "method": "addPlayer", "id": userId });
 
+          var playerAvatar = $(this).data("avatar") + "?s=150";
           // populate the top section depending on which player spot is open
-
+          $(players).each(function(key, value) {
+            if($(this).data('player') == '') {
+              $(this).find('img').prop('src', playerAvatar).end().data('player', userId);
+              $(this).append('<div class="kill-player">X</div>');
+              // set close btn click event
+              $(this).find('.kill-player').on('click', function() {
+                // return to default
+                $(this).parent().data('player', '').find('img').prop('src', 'http://placehold.it/150x150');
+                $(this).remove();
+              });
+              return false;
+            }
+          });
         });
       });
 
@@ -97,9 +123,10 @@ function mainAppListener(request, sender, sendResponse) {
         });
       });
 
-      // foreach btn arrays
+      // end foreach btn arrays
 
       $(shadow).append(clone).promise().done(function() {
+        // todo: not always opening. Set up pre-loader
         $('#foosafy').addClass('open');
         //sendResponse2 = sendResponse;
       });

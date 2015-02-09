@@ -3,12 +3,13 @@
   position: fixed !important;
   z-index: 99999 !important;
   top: 0 !important;
-  right: -400px !important;
+  right: -420px !important;
   height: 100% !important;
-  width: 400px !important;
+  width: 420px !important;
+  overflow: auto !important;
 
   margin: 0 !important;
-  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif !important;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
   font-size: 14px !important;
   line-height: 20px !important;
   color: #333 !important;
