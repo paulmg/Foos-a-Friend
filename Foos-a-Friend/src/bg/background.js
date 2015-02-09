@@ -1,6 +1,9 @@
 // variables //
 var currentState = 'register';
-var registrationId, firstName, lastName, nickName, email, avatar, myNotificationId;
+var registrationId, firstName, lastName, nickName, email, avatar, userId, myNotificationID;
+
+var appId = '35518340190';
+var dbServer = 'http://stormy-brushlands-5186.herokuapp.com/';
 
 console.log(currentState);
 
@@ -45,7 +48,6 @@ function clickMsgToContent() {
 }
 
 function registerFaF(tabs) {
-  console.log(tabs);
    chrome.tabs.sendMessage(tabs[0].id, {method: 'openRegister'}, function(response) {
     if (chrome.runtime.lastError) {
       // An error occurred :(
@@ -57,41 +59,44 @@ function registerFaF(tabs) {
 }
 
 function openFaF(tabs) {
-  // maybe do lookup of users and send it as array before opening
-  // if not then ajax in users in content script
+  //console.log(userId)
+
+  console.log('test')
+  // check for user id
+  checkUserId();
+
   getAllUsers(sendOpenMessage, tabs);
+}
+
+function checkUserId() {
+  // todo: get the userId from db it storage is empty as well
+  if (typeof(userId) == 'undefined' || userId == '') {
+    chrome.storage.local.get('userId', function(result) {
+      console.log(result);
+      if(result['userId'])
+        userId = result['userId'];
+    })
+  }
 }
 
 function getAllUsers(callback, tabs) {
   console.log('getting all users');
 
-  $.get('http://stormy-brushlands-5186.herokuapp.com/getAllUsers.php')
-  .done(function(response) {
-    console.log(response);
+  $.get(dbServer + 'getAllUsers.php')
+    .done(function(response) {
+      console.log(response);
 
-    callback(tabs, response);
+      callback(tabs, response);
 
-    // currentState = 'close';
-  })
-  .fail(function(xhr, textStatus, errorThrown) {
-    console.log('did not get all users', xhr.responseText, textStatus, errorThrown)
-  });
+      // currentState = 'close';
+    })
+    .fail(function(xhr, textStatus, errorThrown) {
+      console.log('did not get all users', xhr.responseText, textStatus, errorThrown)
+    });
 }
 
 function sendOpenMessage(tabs, users) {
   chrome.tabs.sendMessage(tabs[0].id, {method: 'openApp', users: users}, function(response) {
-    if (chrome.runtime.lastError) {
-      // An error occurred :(
-      console.log("ERROR: ", chrome.runtime.lastError);
-    } else {
-      // Do something useful with the HTML content
-      console.log(response);
-    }
-  });
-}
-
-function sendAllUsers(tabs) {
-  chrome.tabs.sendMessage(tabs[0].id, {method: 'usersFetched', users: users}, function(response) {
     if (chrome.runtime.lastError) {
       // An error occurred :(
       console.log("ERROR: ", chrome.runtime.lastError);
@@ -114,7 +119,7 @@ function firstTimeRegistration() {
 }
 
 function register() {
-  var senderId = '35518340190'; //google app id
+  var senderId = appId; //google app id
   chrome.gcm.register([senderId], registerCallback);
 }
 
@@ -146,7 +151,7 @@ function messageReceived(message) {
 
   // Pop up a notification to show the GCM message.
   chrome.notifications.create("", {
-    title: 'GCM Message',
+    title: 'Foos?',
     iconUrl: chrome.extension.getURL('icons/faf_128.png'),
     type: 'basic',
     priority: 2,
@@ -166,10 +171,8 @@ function messageReceived(message) {
 chrome.notifications.onButtonClicked.addListener(function(notifId, btnIdx) {
   if (notifId === myNotificationID) {
     if (btnIdx === 0) {
-      console.log('click accept')
       inviteAccepted();
     } else if (btnIdx === 1) {
-      console.log('click decline')
       inviteDeclined();
     }
   }
@@ -182,32 +185,42 @@ chrome.notifications.onClosed.addListener(function() {
 });
 
 function inviteAccepted() {
-  console.log('userAccepted');
+  checkUserId();
+  console.log(userId); //undefined?
   var data = {userId: userId};
-  $.post('http://stormy-brushlands-5186.herokuapp.com/addPlayer.php', data, function() {
+  $.post(dbServer + 'addPlayer.php', data, function() {})
+    .done(function(response) {
+      console.log(response);
 
-  })
-  .done(function(response) {
-    console.log(response);
-  })
-  .fail(function(xhr, textStatus, errorThrown) {
-    console.log('failed to post to heroku add user', xhr.responseText, textStatus, errorThrown);
-  });
+      chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {method: 'acceptedInvite', users: users}, function(response) {
+          if (chrome.runtime.lastError) {
+            // An error occurred :(
+            console.log("ERROR: ", chrome.runtime.lastError);
+          } else {
+            // Do something useful with the HTML content
+            console.log(response);
+          }
+        });
+      });
+    })
+    .fail(function(xhr, textStatus, errorThrown) {
+      console.log('failed to post to heroku add user', xhr.responseText, textStatus, errorThrown);
+    });
 }
 
 // Handle the user's rejection
 function inviteDeclined() {
-  console.log('userDeclined');
-  var data = {};
-  $.post('http://stormy-brushlands-5186.herokuapp.com/inviteDeclined.php', data, function() {
+  checkUserId();
 
-  })
-  .done(function(response) {
-    console.log(response);
-  })
-  .fail(function(xhr, textStatus, errorThrown) {
-    console.log('failed to post to heroku invite declined', xhr.responseText, textStatus, errorThrown);
-  });
+  var data = {};
+  $.post(dbServer + 'inviteDeclined.php', data, function() {})
+    .done(function(response) {
+      console.log(response);
+    })
+    .fail(function(xhr, textStatus, errorThrown) {
+      console.log('failed to post to heroku invite declined', xhr.responseText, textStatus, errorThrown);
+    });
 }
 
 // todo: should switch to calling only on onInstalled?
@@ -243,7 +256,10 @@ chrome.runtime.onMessage.addListener(
 
           break;
         case 'addPlayer':
+          console.log(request.userId);
           addPlayer(request.userId);
+
+          break;
       }
     }
   }
@@ -252,54 +268,49 @@ chrome.runtime.onMessage.addListener(
 function registerUser() {
   console.log('registeringUser');
   var data = {regId: registrationId, firstName: firstName, lastName: lastName, nickName: nickName, email: email};
-  $.post('http://stormy-brushlands-5186.herokuapp.com/registerUser.php', data, function() {
+  $.post(dbServer + 'registerUser.php', data, function() {})
+    .done(function(response) {
+      console.log(response);
+      userId = response.userId;
+      // Mark that the first-time registration is done, set user id
+      chrome.storage.local.set({registered: true, userId: userId});
+      console.log('registered', registrationId);
 
-  })
-  .done(function(response) {
-    console.log(response);
-    // Mark that the first-time registration is done.
-    chrome.storage.local.set({registered: true});
-    console.log('registered', registrationId);
+      chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        openFaF(tabs);
+      });
 
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      openFaF(tabs);
+      currentState = 'close';
+    })
+    .fail(function(xhr, textStatus, errorThrown) {
+      console.log('failed to post to heroku register user', xhr.responseText, textStatus, errorThrown);
     });
-
-    currentState = 'close';
-  })
-  .fail(function(xhr, textStatus, errorThrown) {
-    console.log('failed to post to heroku register user', xhr.responseText, textStatus, errorThrown);
-  });
 }
 
 function inviteUser(email, regId) {
   console.log('invitingUser');
   var data = {regId: regId, email: email};
-  $.post('http://stormy-brushlands-5186.herokuapp.com/inviteUser.php', data, function() {
+    $.post(dbServer + 'inviteUser.php', data, function() {})
+    .done(function(response) {
+      console.log(response);
 
-  })
-  .done(function(response) {
-    console.log(response);
-
-  })
-  .fail(function(xhr, textStatus, errorThrown) {
-    console.log('failed to post to heroku invite user', xhr.responseText, textStatus, errorThrown);
-  });
+    })
+    .fail(function(xhr, textStatus, errorThrown) {
+      console.log('failed to post to heroku invite user', xhr.responseText, textStatus, errorThrown);
+    });
 }
 
-function addPlayer(playerId) {
+function addPlayer(userId) {
   console.log('addingUser');
-  var data = [playerId];
-  $.post('http://stormy-brushlands-5186.herokuapp.com/addPlayer.php', data, function() {
+  var data = {userId: userId};
+  $.post(dbServer + 'addPlayer.php', data, function() {})
+    .done(function(response) {
+      console.log(response);
 
-  })
-  .done(function(response) {
-    console.log(response);
-
-  })
-  .fail(function(xhr, textStatus, errorThrown) {
-    console.log('failed to post to heroku invite user', xhr.responseText, textStatus, errorThrown);
-  });
+    })
+    .fail(function(xhr, textStatus, errorThrown) {
+      console.log('failed to post to heroku invite user', xhr.responseText, textStatus, errorThrown);
+    });
 }
 
 

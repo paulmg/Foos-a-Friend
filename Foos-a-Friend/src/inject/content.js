@@ -15,7 +15,7 @@ chrome.extension.sendMessage({}, function(response) {
 });
 
 
-var foo;
+var players;
 
 // methods //
 function mainAppListener(request, sender, sendResponse) {
@@ -27,7 +27,7 @@ function mainAppListener(request, sender, sendResponse) {
     var foosafy = $('<div id="foosafy"></div>');
     $('body').append(foosafy);
 
-    var template = foosafy.load(chrome.extension.getURL('src/inject/main.html'), function() {
+    foosafy.load(chrome.extension.getURL('src/inject/main.html'), function() {
       var host = document.querySelector('#foosafy');
 
       var shadow = host.createShadowRoot();
@@ -37,7 +37,7 @@ function mainAppListener(request, sender, sendResponse) {
 
       // player section
       var playersList = clone.querySelector('#foosafyPlayersList');
-      var players = playersList.querySelectorAll('.foosafy-pick-col');
+      players = playersList.querySelectorAll('.foosafy-pick-col');
 
       // user section
       var userList = clone.querySelector('#foosafyUserList');
@@ -61,7 +61,7 @@ function mainAppListener(request, sender, sendResponse) {
         $(userList).append(user);
       });
 
-      var randomBtn = clone.querySelector('#clickRandom');
+      var randomBtn = clone.querySelector('#choseRandomBtn');
       $(randomBtn).on('click', function(e) {
         e.preventDefault();
 
@@ -73,7 +73,7 @@ function mainAppListener(request, sender, sendResponse) {
       $(closeBtn).on('click', function(e) {
         e.preventDefault();
 
-
+        $('#foosafy').removeClass('open');
       });
 
       // btn arrays
@@ -85,7 +85,10 @@ function mainAppListener(request, sender, sendResponse) {
           console.log('test', $(this));
           // set user to playing
           var userId = $(this).data("id");
-          chrome.runtime.sendMessage({ "method": "addPlayer", "id": userId });
+          console.log(userId);
+
+          // todo: might be better to do this once match is started (on match start btn click)
+          chrome.runtime.sendMessage({ "method": "addPlayer", "userId": userId });
 
           var playerAvatar = $(this).data("avatar") + "?s=150";
           // populate the top section depending on which player spot is open
@@ -99,6 +102,7 @@ function mainAppListener(request, sender, sendResponse) {
                 $(this).parent().data('player', '').find('img').prop('src', 'http://placehold.it/150x150');
                 $(this).remove();
               });
+
               return false;
             }
           });
@@ -142,7 +146,7 @@ function mainAppListener(request, sender, sendResponse) {
     var foosafy = $('<div id="foosafy"></div>');
     $('body').append(foosafy);
 
-    var template = foosafy.load(chrome.extension.getURL('src/inject/registration.html'), function() {
+    foosafy.load(chrome.extension.getURL('src/inject/registration.html'), function() {
       var host = document.querySelector('#foosafy');
 
       var shadow = host.createShadowRoot();
@@ -197,6 +201,10 @@ function mainAppListener(request, sender, sendResponse) {
         //sendResponse2 = sendResponse;
       });
     });
+  } else if(request.method && (request.method == 'acceptedInvite')) {
+    console.log('adding Player');
+
+    console.log(players);
   }
 }
 

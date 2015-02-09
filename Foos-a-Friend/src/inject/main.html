@@ -73,9 +73,14 @@
       right: 20px;
       cursor: pointer;
     }
+    
+    .foosafy-link-start {
+      margin-bottom: 15px;
+      display: none;
+    }
   </style>
   <h1>Foos a Friend</h1>
-  <div id="closeFoosafy" class="close-foosafy-btn">X</div>
+  <div id="closeFoosafyBtn" class="close-foosafy-btn">X</div>
   <section id="foosafyPlayersList" class="foosafy-pick">
     <div class="foosafy-pick-row">
       <div class="foosafy-pick-col" data-player="">1 <img src="http://placehold.it/150x150" /></div>
@@ -86,7 +91,8 @@
       <div class="foosafy-pick-col" data-player=""><img src="http://placehold.it/150x150" /> 4</div>
     </div>
     <div style="clear:both;"></div>
-    <a id="clickRandom" class="foosafy-link-random" href="#">Pick Foosers at Random</a>
+    <a id="chooseRandomBtn" class="foosafy-link-start" href="#">Start Match</a>
+    <a id="chooseRandomBtn" class="foosafy-link-random" href="#">Pick Foosers at Random</a>
     <p>or</p>
     <p>Select Individual Players</p>
   </section>
