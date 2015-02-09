@@ -22,7 +22,7 @@
 
     h1 {
       font-size: 38px;
-      margin: 10px 0;
+      margin: 20px 0 10px;
       font-family: inherit;
       font-weight: bold;
       line-height: 20px;
@@ -44,7 +44,7 @@
     }
 
     .foosafy-pick-col {
-
+      position: relative;
     }
 
     .foosafy-pick-col img {
@@ -66,16 +66,24 @@
     .foosafy-individual td {
 
     }
+
+    .kill-player, .close-foosafy-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      cursor: pointer;
+    }
   </style>
   <h1>Foos a Friend</h1>
-  <section class="foosafy-pick">
+  <div id="closeFoosafy" class="close-foosafy-btn">X</div>
+  <section id="foosafyPlayersList" class="foosafy-pick">
     <div class="foosafy-pick-row">
-      <div class="foosafy-pick-col">1 <img src="http://placehold.it/150x150" /></div>
-      <div class="foosafy-pick-col">2 <img src="http://placehold.it/150x150" /></div>
+      <div class="foosafy-pick-col" data-player="">1 <img src="http://placehold.it/150x150" /></div>
+      <div class="foosafy-pick-col" data-player="">2 <img src="http://placehold.it/150x150" /></div>
     </div>
     <div class="foosafy-pick-row">
-      <div class="foosafy-pick-col"><img src="http://placehold.it/150x150" /> 3</div>
-      <div class="foosafy-pick-col"><img src="http://placehold.it/150x150" /> 4</div>
+      <div class="foosafy-pick-col" data-player=""><img src="http://placehold.it/150x150" /> 3</div>
+      <div class="foosafy-pick-col" data-player=""><img src="http://placehold.it/150x150" /> 4</div>
     </div>
     <div style="clear:both;"></div>
     <a id="clickRandom" class="foosafy-link-random" href="#">Pick Foosers at Random</a>
@@ -84,8 +92,6 @@
   </section>
   <section class="foosafy-individual">
     <table id="foosafyUserList">
-      
-      
     </table>
   </section>
 </template>
