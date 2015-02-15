@@ -1,6 +1,6 @@
 // Bring Mongoose into the app
 var mongoose = require( 'mongoose' );
-var config = require('config');
+var config = require('./../modules/config');
 
 // Build the connection string
 var dbURI = config.db;
