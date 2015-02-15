@@ -1,7 +1,9 @@
 ;(function() {
-
   console.log('BACKGROUND SCRIPT WORKS!');
-  var mongoose = require('mongoose');
+
+  var $ = require('./libs/jquery');
+  //var mongoose = require('mongoose');
+
   // here we use SHARED message handlers, so all the contexts support the same
   // commands. in background, we extend the handlers with two special
   // notification hooks. but this is NOT typical messaging system usage, since
@@ -14,63 +16,123 @@
   // to be able to issue command requests from this context), you may simply
   // omit the `handlers` parameter for good when invoking msg.init()
   var handlers = require('./modules/handlers').create('bg');
+
   // adding special background notification handlers onConnect / onDisconnect
   function logEvent(ev, context, tabId) {
     console.log(ev + ': context = ' + context + ', tabId = ' + tabId);
   }
   handlers.onConnect = logEvent.bind(null, 'onConnect');
   handlers.onDisconnect = logEvent.bind(null, 'onDisconnect');
+
   var msg = require('./modules/msg').init('bg', handlers);
 
   var register = require('./modules/register');
   var config = require('./modules/config');
 
   // variables //
-  var currentState = 'register';
-  var firstName, lastName, nickName, email, avatar, userId, myNotificationID;
-
-  console.log(currentState);
+  var firstName, lastName, nickName, email, userId, myNotificationID;
 
   function clickMsgToContent() {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      console.log('click', currentState);
 
-      switch(currentState) {
-        case 'register':
-          // stop register if options already filled out
-          chrome.storage.local.get("registered", function(result) {
-            // If already registered, bail out.
-            if (result["registered"]) {
-              openFaF(tabs);
+      var currentState = '';
+      chrome.storage.local.get("currentState", function(result) {
+        currentState = result['currentState'] ? result['currentState'] : 'registered';
 
-              currentState = 'close';
-            } else {
-              registerFaF(tabs);
-            }
-          });
+        switch(currentState) {
+          case 'register':
+            // stop register if options already filled out
+            chrome.storage.local.get("registered", function(result) {
+              // If already registered, bail out.
+              if (result["registered"]) {
+                openMain();
 
-          break;
-        case 'open':
-          openFaF(tabs);
+                chrome.storage.local.set({currentState: 'close'});
+              } else {
+                openRegistration();
+              }
+            });
 
-          currentState = 'close';
+            break;
+          case 'open':
+            openMain();
 
-          break;
-        case 'close':
-          chrome.tabs.sendMessage(tabs[0].id, {method: 'closeApp'}, function(response) {});
+            chrome.storage.local.set({currentState: 'close'});
 
-          currentState = 'open';
+            break;
+          case 'close':
+            chrome.tabs.sendMessage(tabs[0].id, {method: 'closeApp'}, function(response) {});
 
-          break;
-        default:
-          registerFaF(tabs);
+            chrome.storage.local.set({currentState: 'open'});
 
-          break;
-      }
+            break;
+          default:
+            openRegistration();
+
+            break;
+        }
+      });
     });
   }
 
-  function messageReceived(message) {
+  function openRegistration() {
+    var regId = '';
+    chrome.storage.local.get("regId", function(result) {
+
+      regId = result['regId'] ? result['regId'] : '';
+
+      msg.bcast(['ct'], 'openRegistration', regId, function(result){
+        console.log(result);
+
+        //var addUser = require('./server/add.user.js');
+        //addUser(result);
+      });
+    });
+  }
+
+  function checkUserId() {
+    // todo: get the userId from db it storage is empty as well
+    if (typeof(userId) == 'undefined' || userId == '') {
+      chrome.storage.local.get('userId', function(result) {
+        console.log(result);
+        if(result['userId'])
+          return result['userId'];
+      })
+    }
+    return false;
+  }
+
+
+  function openMain() {
+    console.log('openingMain');
+    // check for user id
+    checkUserId();
+
+    getAllUsers(sendOpenMessage);
+  }
+
+  function getAllUsers(callback) {
+    console.log('getting all users');
+
+    $.get(config.server + '/getAllUsers.php')
+      .done(function(response) {
+        console.log(response);
+
+        callback(response);
+        // currentState = 'close';
+      })
+      .fail(function(xhr, textStatus, errorThrown) {
+        console.log('did not get all users', xhr.responseText, textStatus, errorThrown)
+      });
+  }
+
+  function sendOpenMessage(users) {
+    console.log('sending open msg');
+    msg.bcast(['ct'], 'openMain', users, function() {});
+  }
+
+
+  function gcmMessageReceived(message) {
     // A message is an object with a data property that
     // consists of key-value pairs.
 
@@ -122,8 +184,7 @@
     console.log(userId); //undefined?
     var data = {userId: userId};
 
-
-    $.post(dbServer + 'addPlayer.php', data, function() {})
+    $.post(config.server + '/addPlayer.php', data, function() {})
       .done(function(response) {
         console.log(response);
 
@@ -144,12 +205,12 @@
       });
   }
 
-// Handle the user's rejection
+  // Handle the user's rejection
   function inviteDeclined() {
     checkUserId();
 
     var data = {};
-    $.post(dbServer + 'inviteDeclined.php', data, function() {})
+    $.post(config.server + '/inviteDeclined.php', data, function() {})
       .done(function(response) {
         console.log(response);
       })
@@ -158,14 +219,17 @@
       });
   }
 
+
   // listeners //
   // click //
   chrome.browserAction.onClicked.addListener(clickMsgToContent);
 
   // Set up a listener for GCM message event.
-  chrome.gcm.onMessage.addListener(messageReceived);
+  chrome.gcm.onMessage.addListener(gcmMessageReceived);
 
   // Set up listeners to trigger the first time registration.
-  chrome.runtime.onInstalled.addListener(register(config.appId));
-  chrome.runtime.onStartup.addListener(register(config.appId));
+  //chrome.runtime.onInstalled.addListener(register(config.appId));
+  //chrome.runtime.onStartup.addListener(register(config.appId));
+
+  register(config.appId);
 })();

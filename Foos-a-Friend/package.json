@@ -4,7 +4,6 @@
   "description": "Foos the shit out of your friends",
   "dependencies": {},
   "devDependencies": {
-    "async": "^0.9.0",
     "browserify": "~7.0.3",
     "eventemitter2": "^0.4.14",
     "grunt": "~0.4.5",
@@ -17,7 +16,6 @@
     "grunt-exec": "~0.4.6",
     "grunt-mkdir": "~0.1.2",
     "grunt-mocha-test": "~0.12.4",
-    "mongoose": "^3.8.23",
     "sinon": "~1.12.2"
   },
   "engines": {

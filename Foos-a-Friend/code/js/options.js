@@ -1,5 +1,6 @@
 ;(function() {
   console.log('OPTIONS SCRIPT WORKS!');
+
   var $ = require('./libs/jquery');
   var handlers = require('./modules/handlers').create('options');
   var msg = require('./modules/msg').init('options', handlers);

@@ -4,6 +4,8 @@
 // random number 0 - 999. `randomAsync` returns the value with 15 second delay.
 // `echo` function doesn't return anything, just logs the input parameter
 // `what`.
+var $ = require('../libs/jquery');
+var config = require('./config');
 
 function log() {
   console.log.apply(console, arguments);
@@ -28,6 +30,53 @@ module.exports.create = function(context) {
     echo: function(what, done) {
       log('---> ' + context + '::echo("' + what + '") invoked');
       log('<--- (no return value)');
+      done();
+    },
+    registerUser: function(data, done) {
+      console.log('registeringUser', data);
+
+      $.post(config.server + '/registerUser.php', data, function() {})
+        .done(function(response) {
+          console.log(response);
+
+          // Mark that the first-time registration is done, set user id
+          chrome.storage.local.set({registered: true, userId: response.userId, currentState: 'close'});
+
+          //chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+          //  openMain();
+          //});
+        })
+        .fail(function(xhr, textStatus, errorThrown) {
+          console.log('failed to post to heroku register user', xhr.responseText, textStatus, errorThrown);
+        });
+
+      done();
+    },
+    inviteUser: function(email, regId, done) {
+      console.log('invitingUser');
+
+      var data = {regId: regId, email: email};
+      $.post(config.server + '/inviteUser.php', data, function() {})
+        .done(function(response) {
+          console.log(response);
+        })
+        .fail(function(xhr, textStatus, errorThrown) {
+          console.log('failed to post to heroku invite user', xhr.responseText, textStatus, errorThrown);
+        });
+
+      done();
+    },
+    addPlayer: function(userId, done) {
+      console.log('addingPlayer');
+      var data = {userId: userId};
+      $.post(dbServer + 'addPlayer.php', data, function() {})
+        .done(function(response) {
+          console.log(response);
+        })
+        .fail(function(xhr, textStatus, errorThrown) {
+          console.log('failed to post to heroku invite user', xhr.responseText, textStatus, errorThrown);
+        });
+
       done();
     }
   };

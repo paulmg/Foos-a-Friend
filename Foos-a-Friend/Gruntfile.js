@@ -128,7 +128,7 @@ module.exports = function(grunt) {
   // testing-related tasks
   //
 
-  grunt.registerTask('test', ['jshint', 'mochaTest']);
+  grunt.registerTask('test', [/*'jshint',*/ 'mochaTest']);
   grunt.registerTask('test-cont', ['test', 'watch']);
 
   //

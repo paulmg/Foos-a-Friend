@@ -1,6 +1,4 @@
 module.exports = function firstTimeRegistration(appId) {
-  var regId;
-
   chrome.storage.local.get("registered", function (result) {
     // If already registered, bail out.
     if (result["registered"])
@@ -15,7 +13,6 @@ module.exports = function firstTimeRegistration(appId) {
   }
 
   function registerCallback(regId) {
-
     console.log('registerCallback', regId);
 
     if (chrome.runtime.lastError) {

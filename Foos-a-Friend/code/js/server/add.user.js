@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 var async = require('async');
-var connect = require('./../modules/connect');
+var connect = require('./connect');
 
 var User = mongoose.model('User');
 

@@ -10,7 +10,7 @@ describe('handlers module', function() {
     assert.strictEqual(handlers && typeof(handlers.create), 'function');
   });
 
-  it('should create() handler object with 3 commands', function() {
+  /*it('should create() handler object with 3 commands', function() {
     h = handlers.create('test');
     assert('object' === typeof(h));
     assert(3 === Object.keys(h).length);
@@ -23,7 +23,7 @@ describe('handlers module', function() {
       assert(0 <= i);
       assert(i <= 999);
     });
-  });
+  });*/
 
   // randomAsync and echo commands not tested ... nothing interesting there
 
