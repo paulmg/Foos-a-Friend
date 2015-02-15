@@ -27,7 +27,7 @@ function mainAppListener(request, sender, sendResponse) {
     var foosafy = $('<div id="foosafy"></div>');
     $('body').append(foosafy);
 
-    foosafy.load(chrome.extension.getURL('src/inject/main.html'), function() {
+    foosafy.load(chrome.extension.getURL('html/main.html'), function() {
       var host = document.querySelector('#foosafy');
 
       var shadow = host.createShadowRoot();
@@ -146,7 +146,7 @@ function mainAppListener(request, sender, sendResponse) {
     var foosafy = $('<div id="foosafy"></div>');
     $('body').append(foosafy);
 
-    foosafy.load(chrome.extension.getURL('src/inject/registration.html'), function() {
+    foosafy.load(chrome.extension.getURL('html/registration.html'), function() {
       var host = document.querySelector('#foosafy');
 
       var shadow = host.createShadowRoot();

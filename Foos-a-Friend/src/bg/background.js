@@ -58,16 +58,6 @@ function registerFaF(tabs) {
   });
 }
 
-function openFaF(tabs) {
-  //console.log(userId)
-
-  console.log('test')
-  // check for user id
-  checkUserId();
-
-  getAllUsers(sendOpenMessage, tabs);
-}
-
 function checkUserId() {
   // todo: get the userId from db it storage is empty as well
   if (typeof(userId) == 'undefined' || userId == '') {
@@ -77,6 +67,17 @@ function checkUserId() {
         userId = result['userId'];
     })
   }
+}
+
+
+function openFaF(tabs) {
+  //console.log(userId)
+
+  console.log('test')
+  // check for user id
+  checkUserId();
+
+  getAllUsers(sendOpenMessage, tabs);
 }
 
 function getAllUsers(callback, tabs) {
@@ -106,133 +107,6 @@ function sendOpenMessage(tabs, users) {
     }
   });
 }
-
-function firstTimeRegistration() {
-  chrome.storage.local.get("registered", function(result) {
-    // If already registered, bail out.
-    if (result["registered"])
-      return;
-
-    console.log('register');
-    register();
-  });
-}
-
-function register() {
-  var senderId = appId; //google app id
-  chrome.gcm.register([senderId], registerCallback);
-}
-
-function registerCallback(regId) {
-  registrationId = regId;
-
-  console.log('registerCallback', regId);
-
-  if (chrome.runtime.lastError) {
-    // When the registration fails, handle the error and retry the
-    // registration later.
-    console.log("Registration failed: " + chrome.runtime.lastError.message);
-    return;
-  }
-}
-
-function messageReceived(message) {
-  // A message is an object with a data property that
-  // consists of key-value pairs.
-
-  // Concatenate all key-value pairs to form a display string.
-  var messageString = "";
-  for (var key in message.data) {
-    if (messageString !== "")
-      messageString += ", ";
-    messageString += key + ":" + message.data[key];
-  }
-  console.log("Message received: " + messageString);
-
-  // Pop up a notification to show the GCM message.
-  chrome.notifications.create("", {
-    title: 'Foos?',
-    iconUrl: chrome.extension.getURL('icons/faf_128.png'),
-    type: 'basic',
-    priority: 2,
-    buttons: [{
-      title: "Yes, let's Foos"
-    }, {
-      title: "No, I'm lame"
-    }],
-    message: messageString
-  },  function(id) {
-    myNotificationID = id;
-  });
-}
-
-
-/* Respond to the user's clicking one of the buttons */
-chrome.notifications.onButtonClicked.addListener(function(notifId, btnIdx) {
-  if (notifId === myNotificationID) {
-    if (btnIdx === 0) {
-      inviteAccepted();
-    } else if (btnIdx === 1) {
-      inviteDeclined();
-    }
-  }
-});
-
-/* Add this to also handle the user's clicking
- * the small 'x' on the top right corner */
-chrome.notifications.onClosed.addListener(function() {
-  inviteDeclined();
-});
-
-function inviteAccepted() {
-  checkUserId();
-  console.log(userId); //undefined?
-  var data = {userId: userId};
-  $.post(dbServer + 'addPlayer.php', data, function() {})
-    .done(function(response) {
-      console.log(response);
-
-      chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {method: 'acceptedInvite', users: users}, function(response) {
-          if (chrome.runtime.lastError) {
-            // An error occurred :(
-            console.log("ERROR: ", chrome.runtime.lastError);
-          } else {
-            // Do something useful with the HTML content
-            console.log(response);
-          }
-        });
-      });
-    })
-    .fail(function(xhr, textStatus, errorThrown) {
-      console.log('failed to post to heroku add user', xhr.responseText, textStatus, errorThrown);
-    });
-}
-
-// Handle the user's rejection
-function inviteDeclined() {
-  checkUserId();
-
-  var data = {};
-  $.post(dbServer + 'inviteDeclined.php', data, function() {})
-    .done(function(response) {
-      console.log(response);
-    })
-    .fail(function(xhr, textStatus, errorThrown) {
-      console.log('failed to post to heroku invite declined', xhr.responseText, textStatus, errorThrown);
-    });
-}
-
-// todo: should switch to calling only on onInstalled?
-firstTimeRegistration();
-
-// listeners //
-// click //
-chrome.browserAction.onClicked.addListener(clickMsgToContent);
-
-// Set up listeners to trigger the first time registration.
-//chrome.runtime.onInstalled.addListener(firstTimeRegistration);
-//chrome.runtime.onStartup.addListener(firstTimeRegistration);
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
@@ -314,5 +188,4 @@ function addPlayer(userId) {
 }
 
 
-// Set up a listener for GCM message event.
-chrome.gcm.onMessage.addListener(messageReceived);
+
