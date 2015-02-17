@@ -75,28 +75,48 @@
     }
     
     .foosafy-link-start {
-      margin-bottom: 15px;
-      display: none;
+      margin-top: 20px;
+    }
+
+    .foosafy-player-number {
+      position: absolute;
+      top: 45%;
+    }
+
+    .hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .reveal {
+      opacity: 1;
+      visibility: visible;
+    }
+    .transition {
+      -webkit-transition: opacity 400ms;
+      -moz-transition: opacity 400ms;
+      -ms-transition: opacity 400ms;
+      -o-transition: opacity 400ms;
+      transition: opacity 400ms;
     }
   </style>
   <h1>Foos a Friend</h1>
   <div id="closeFoosafyBtn" class="close-foosafy-btn">X</div>
-  <section id="foosafyPlayersList" class="foosafy-pick">
+  <a id="startMatchBtn" href="#" class="foosafy-link-start">Start Match</a>
+  <section id="foosafyPlayersList" class="foosafy-pick hidden transition">
     <div class="foosafy-pick-row">
-      <div class="foosafy-pick-col" data-player="">1 <img src="//placehold.it/150x150" /></div>
-      <div class="foosafy-pick-col" data-player="">2 <img src="//placehold.it/150x150" /></div>
+      <div class="foosafy-pick-col" data-player=""><span class="foosafy-player-number">1</span><img src="//placehold.it/150x150" /></div>
+      <div class="foosafy-pick-col" data-player=""><span class="foosafy-player-number">2</span><img src="//placehold.it/150x150" /></div>
     </div>
     <div class="foosafy-pick-row">
-      <div class="foosafy-pick-col" data-player=""><img src="//placehold.it/150x150" /> 3</div>
-      <div class="foosafy-pick-col" data-player=""><img src="//placehold.it/150x150" /> 4</div>
+      <div class="foosafy-pick-col" data-player=""><img src="//placehold.it/150x150" /><span class="foosafy-player-number">3</span></div>
+      <div class="foosafy-pick-col" data-player=""><img src="//placehold.it/150x150" /><span class="foosafy-player-number">4</span></div>
     </div>
     <div style="clear:both;"></div>
-    <a id="startMatchBtn" class="foosafy-link-start" href="#">Start Match</a>
     <a id="chooseRandomBtn" class="foosafy-link-random" href="#">Pick Foosers at Random</a>
     <p>or</p>
     <p>Select Individual Players</p>
   </section>
-  <section class="foosafy-individual">
+  <section class="foosafy-individual hidden transition">
     <table id="foosafyUserList">
     </table>
   </section>

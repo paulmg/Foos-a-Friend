@@ -1,8 +1,8 @@
 ;(function() {
   console.log('BACKGROUND SCRIPT WORKS!');
+  chrome.storage.local.set({currentState: 'register'});
 
   var $ = require('./libs/jquery');
-  //var mongoose = require('mongoose');
 
   // here we use SHARED message handlers, so all the contexts support the same
   // commands. in background, we extend the handlers with two special
@@ -30,24 +30,22 @@
   var config = require('./modules/config');
 
   // variables //
-  var firstName, lastName, nickName, email, userId, myNotificationID;
+  var userId, myNotificationID;
 
   function clickMsgToContent() {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 
       var currentState = '';
-      chrome.storage.local.get("currentState", function(result) {
+      chrome.storage.local.get('currentState', function(result) {
         currentState = result['currentState'] ? result['currentState'] : 'registered';
 
         switch(currentState) {
           case 'register':
             // stop register if options already filled out
-            chrome.storage.local.get("registered", function(result) {
+            chrome.storage.local.get('registered', function(result) {
               // If already registered, bail out.
-              if (result["registered"]) {
+              if (result['registered']) {
                 openMain();
-
-                chrome.storage.local.set({currentState: 'close'});
               } else {
                 openRegistration();
               }
@@ -57,11 +55,9 @@
           case 'open':
             openMain();
 
-            chrome.storage.local.set({currentState: 'close'});
-
             break;
           case 'close':
-            chrome.tabs.sendMessage(tabs[0].id, {method: 'closeApp'}, function(response) {});
+            closeMain();
 
             chrome.storage.local.set({currentState: 'open'});
 
@@ -77,36 +73,18 @@
 
   function openRegistration() {
     var regId = '';
-    chrome.storage.local.get("regId", function(result) {
+    chrome.storage.local.get('regId', function(result) {
 
       regId = result['regId'] ? result['regId'] : '';
 
-      msg.bcast(['ct'], 'openRegistration', regId, function(result){
+      msg.cmd(['ct'], 'openRegistration', regId, function(result){
         console.log(result);
-
-        //var addUser = require('./server/add.user.js');
-        //addUser(result);
       });
     });
   }
 
-  function checkUserId() {
-    // todo: get the userId from db it storage is empty as well
-    if (typeof(userId) == 'undefined' || userId == '') {
-      chrome.storage.local.get('userId', function(result) {
-        console.log(result);
-        if(result['userId'])
-          return result['userId'];
-      })
-    }
-    return false;
-  }
-
-
   function openMain() {
     console.log('openingMain');
-    // check for user id
-    checkUserId();
 
     getAllUsers(sendOpenMessage);
   }
@@ -119,7 +97,6 @@
         console.log(response);
 
         callback(response);
-        // currentState = 'close';
       })
       .fail(function(xhr, textStatus, errorThrown) {
         console.log('did not get all users', xhr.responseText, textStatus, errorThrown)
@@ -128,7 +105,20 @@
 
   function sendOpenMessage(users) {
     console.log('sending open msg');
-    msg.bcast(['ct'], 'openMain', users, function() {});
+    msg.cmd(['ct'], 'openMain', users, function(result) {
+      if(result == 'main open') {
+        chrome.storage.local.set({currentState: 'close'});
+      }
+    });
+  }
+
+  function closeMain() {
+    console.log('sending close msg');
+    msg.cmd(['ct'], 'closeMain', function(result) {
+      if(result == 'main close') {
+        chrome.storage.local.set({currentState: 'open'});
+      }
+    });
   }
 
 
@@ -180,43 +170,42 @@
   });
 
   function inviteAccepted() {
-    checkUserId();
-    console.log(userId); //undefined?
-    var data = {userId: userId};
+    chrome.storage.local.get('userId', function(result) {
+      var userId = '';
+      if (result['userId'])
+        userId = result['userId'];
 
-    $.post(config.server + '/addPlayer.php', data, function() {})
-      .done(function(response) {
-        console.log(response);
+      var data = {userId: userId};
 
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-          chrome.tabs.sendMessage(tabs[0].id, {method: 'acceptedInvite', users: users}, function(response) {
-            if (chrome.runtime.lastError) {
-              // An error occurred :(
-              console.log("ERROR: ", chrome.runtime.lastError);
-            } else {
-              // Do something useful with the HTML content
-              console.log(response);
-            }
-          });
+      $.post(config.server + '/addPlayer.php', data, function () {})
+        .done(function (response) {
+          console.log(response);
+
+          msg.cmd(['ct'], 'acceptedInvite', function () {});
+        })
+        .fail(function (xhr, textStatus, errorThrown) {
+          console.log('failed to post to heroku add user', xhr.responseText, textStatus, errorThrown);
         });
-      })
-      .fail(function(xhr, textStatus, errorThrown) {
-        console.log('failed to post to heroku add user', xhr.responseText, textStatus, errorThrown);
-      });
+    });
   }
 
   // Handle the user's rejection
   function inviteDeclined() {
-    checkUserId();
+    chrome.storage.local.get('userId', function(result) {
+      var userId = '';
+      if (result['userId'])
+        userId = result['userId'];
 
-    var data = {};
-    $.post(config.server + '/inviteDeclined.php', data, function() {})
-      .done(function(response) {
-        console.log(response);
+      var data = {userId: userId};
+      $.post(config.server + '/inviteDeclined.php', data, function () {
       })
-      .fail(function(xhr, textStatus, errorThrown) {
-        console.log('failed to post to heroku invite declined', xhr.responseText, textStatus, errorThrown);
-      });
+        .done(function (response) {
+          console.log(response);
+        })
+        .fail(function (xhr, textStatus, errorThrown) {
+          console.log('failed to post to heroku invite declined', xhr.responseText, textStatus, errorThrown);
+        });
+    });
   }
 
 

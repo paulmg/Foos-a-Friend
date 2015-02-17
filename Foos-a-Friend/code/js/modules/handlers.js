@@ -5,13 +5,14 @@
 // `echo` function doesn't return anything, just logs the input parameter
 // `what`.
 var $ = require('../libs/jquery');
-var config = require('./config');
 
 function log() {
   console.log.apply(console, arguments);
 }
 
 module.exports.create = function(context) {
+  var config = require('./config');
+
   return {
     random: function(done) {
       log('---> ' + context + '::random() invoked');
@@ -59,6 +60,11 @@ module.exports.create = function(context) {
       $.post(config.server + '/inviteUser.php', data, function() {})
         .done(function(response) {
           console.log(response);
+
+          if(response.failure != 0) {
+            console.log('gcm message invite failure');
+            msg.cmd(['ct'], 'inviteFailed', function(){});
+          }
         })
         .fail(function(xhr, textStatus, errorThrown) {
           console.log('failed to post to heroku invite user', xhr.responseText, textStatus, errorThrown);
@@ -69,7 +75,7 @@ module.exports.create = function(context) {
     addPlayer: function(userId, done) {
       console.log('addingPlayer');
       var data = {userId: userId};
-      $.post(dbServer + 'addPlayer.php', data, function() {})
+      $.post(config.server + '/addPlayer.php', data, function() {})
         .done(function(response) {
           console.log(response);
         })

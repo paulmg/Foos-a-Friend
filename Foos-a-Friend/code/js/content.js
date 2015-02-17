@@ -3,7 +3,6 @@
 
   var $ = require('./libs/jquery');
 
-  //var handlers = require('./modules/handlers').create('ct');
   var handlers = require('./modules/content.handlers').create('ct');
   require('./modules/msg').init('ct', handlers);
 

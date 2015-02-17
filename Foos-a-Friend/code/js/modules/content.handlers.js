@@ -1,11 +1,12 @@
-var $ = require('../libs/jquery');
-var msg = require('./msg').init('ct-handlers');
-
 function log() {
   console.log.apply(console, arguments);
 }
 
 module.exports.create = function(context) {
+  var $ = require('../libs/jquery');
+  var msg = require('./msg').init('ct-handlers');
+  var inviteBtn;
+
   return {
     openRegistration: function(regId, done) {
       var data = {};
@@ -52,8 +53,8 @@ module.exports.create = function(context) {
                 //chrome.runtime.sendMessage({ "method": "registerUser", "email": emailVal, "firstName": firstNameVal, "lastName": lastNameVal, "nickName": nickNameVal });
                 msg.bg('registerUser', data, function() {});
 
-                $('#foosafy').removeClass('open').delay(400).promise().done(function() {
-                  $('#foosafy').remove();
+                foosafy.removeClass('open').delay(400).promise().done(function() {
+                  foosafy.remove();
                 });
               }, 750);
             });
@@ -63,12 +64,11 @@ module.exports.create = function(context) {
         });
 
         $(shadow).append(clone).delay(100).promise().done(function() {
-          $('#foosafy').addClass('open');
-          console.log($('#submitRegister'));
+          foosafy.addClass('open');
         });
       });
 
-      done();
+      done('register open');
     },
     openMain: function(response, done) {
       log('opening Main');
@@ -111,6 +111,17 @@ module.exports.create = function(context) {
           $(userList).append(user);
         });
 
+        var startMatchBtn = clone.querySelector('#startMatchBtn');
+        var hidden = clone.querySelectorAll('.hidden');
+
+        $(startMatchBtn).on('click', function(e) {
+          e.preventDefault();
+
+          console.log(hidden)
+
+          $(hidden).addClass('reveal');
+        });
+
         var randomBtn = clone.querySelector('#choseRandomBtn');
         $(randomBtn).on('click', function(e) {
           e.preventDefault();
@@ -123,7 +134,7 @@ module.exports.create = function(context) {
         $(closeBtn).on('click', function(e) {
           e.preventDefault();
 
-          $('#foosafy').removeClass('open');
+          foosafy.removeClass('open');
         });
 
         // btn arrays
@@ -137,10 +148,6 @@ module.exports.create = function(context) {
             var userId = $(this).data("id");
             log(userId);
 
-            // todo: might be better to do this once match is started (on match start btn click)
-            msg.bg('addPlayer', {"userId": userId});
-            //chrome.runtime.sendMessage({ "method": "addPlayer", "userId": userId });
-
             var playerAvatar = $(this).data("avatar") + "?s=150";
             // populate the top section depending on which player spot is open
             $(players).each(function(key, value) {
@@ -153,6 +160,9 @@ module.exports.create = function(context) {
                   $(this).parent().data('player', '').find('img').prop('src', '//placehold.it/150x150');
                   $(this).remove();
                 });
+
+                // todo: might be better to do this once match is started (on match start btn click)
+                msg.bg('addPlayer', {"userId": userId});
 
                 return false;
               }
@@ -174,8 +184,6 @@ module.exports.create = function(context) {
 
             msg.bg('inviteUser', data, function(){});
 
-            //chrome.runtime.sendMessage({ "method": "inviteUser", "email": emailVal, "regId": regIdVal });
-
             // create invite sent
 
             log('test', $(this))
@@ -186,20 +194,24 @@ module.exports.create = function(context) {
 
         $(shadow).append(clone).promise().done(function() {
           // todo: not always opening. Set up pre-loader
-          $('#foosafy').addClass('open');
+          foosafy.addClass('open');
         });
       });
 
-      done();
+      done('main open');
     },
     closeMain: function(done) {
       $('#foosafy').removeClass('open').delay(400).promise().done(function() {
         $('#foosafy').remove();
       });
 
-      done();
+      done('main close');
     },
     acceptedInvite: function(done) {
+
+      done();
+    },
+    inviteFailed: function(done) {
 
       done();
     }
