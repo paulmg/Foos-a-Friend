@@ -34,10 +34,11 @@
 
   function clickMsgToContent() {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      chrome.storage.local.get(null, function(all){console.log(all)});
 
       var currentState = '';
       chrome.storage.local.get('currentState', function(result) {
-        currentState = result['currentState'] ? result['currentState'] : 'registered';
+        currentState = result['currentState'] ? result['currentState'] : 'register';
 
         switch(currentState) {
           case 'register':

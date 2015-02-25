@@ -20,7 +20,7 @@ module.exports = function firstTimeRegistration(appId) {
       // registration later.
       console.log("Registration failed: " + chrome.runtime.lastError.message);
     } else {
-      chrome.storage.local.set({registered: true, regId: regId});
+      chrome.storage.local.set({regId: regId});
     }
   }
 };
