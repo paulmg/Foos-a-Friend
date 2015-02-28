@@ -17,7 +17,7 @@
     }
 
     p {
-      margin: 0 0 10px;
+      margin: 10px 0;
     }
 
     h1 {
@@ -74,8 +74,15 @@
       cursor: pointer;
     }
     
-    .foosafy-link-start {
+    .foosafy-link-setup {
       margin-top: 20px;
+    }
+    
+    .foosafy-link-start {
+      position: absolute;
+      top: 180px;
+      left: 150px;
+      z-index: 3;
     }
 
     .foosafy-player-number {
@@ -91,17 +98,20 @@
       opacity: 1;
       visibility: visible;
     }
+    .display-none {
+      display: none;
+    }
     .transition {
-      -webkit-transition: opacity 400ms;
-      -moz-transition: opacity 400ms;
-      -ms-transition: opacity 400ms;
-      -o-transition: opacity 400ms;
-      transition: opacity 400ms;
+      -webkit-transition: all 400ms;
+      -moz-transition: all 400ms;
+      -ms-transition: all 400ms;
+      -o-transition: all 400ms;
+      transition: all 400ms;
     }
   </style>
   <h1>Foos a Friend</h1>
   <div id="closeFoosafyBtn" class="close-foosafy-btn">X</div>
-  <a id="startMatchBtn" href="#" class="foosafy-link-start">Start Match</a>
+  <a id="setMatchBtn" href="#" class="foosafy-link-setup transition">Set Up Match</a>
   <section id="foosafyPlayersList" class="foosafy-pick hidden transition">
     <div class="foosafy-pick-row">
       <div class="foosafy-pick-col" data-player=""><span class="foosafy-player-number">1</span><img src="//placehold.it/150x150" /></div>
@@ -112,11 +122,12 @@
       <div class="foosafy-pick-col" data-player=""><img src="//placehold.it/150x150" /><span class="foosafy-player-number">4</span></div>
     </div>
     <div style="clear:both;"></div>
+    <a id="startMatchBtn" href="#" class="foosafy-link-start transition">Start Match</a>
     <a id="chooseRandomBtn" class="foosafy-link-random" href="#">Pick Foosers at Random</a>
     <p>or</p>
     <p>Select Individual Players</p>
   </section>
-  <section class="foosafy-individual hidden transition">
+  <section id="foosafyIndividual" class="foosafy-individual hidden transition">
     <table id="foosafyUserList">
     </table>
   </section>

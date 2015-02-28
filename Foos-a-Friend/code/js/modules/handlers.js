@@ -53,17 +53,17 @@ module.exports.create = function(context) {
 
       done();
     },
-    inviteUser: function(email, regId, done) {
+    inviteUser: function(data, done) {
+      console.log(data)
       console.log('invitingUser');
 
-      var data = {regId: regId, email: email};
       $.post(config.server + '/inviteUser.php', data, function() {})
         .done(function(response) {
           console.log(response);
 
           if(response.failure != 0) {
             console.log('gcm message invite failure');
-            msg.cmd(['ct'], 'inviteFailed', function(){});
+            //msg.cmd(['ct'], 'inviteFailed', function(){});
           }
         })
         .fail(function(xhr, textStatus, errorThrown) {
@@ -73,7 +73,7 @@ module.exports.create = function(context) {
       done();
     },
     addPlayer: function(userId, done) {
-      console.log('addingPlayer');
+      console.log(userId);
       var data = {userId: userId};
       $.post(config.server + '/addPlayer.php', data, function() {})
         .done(function(response) {

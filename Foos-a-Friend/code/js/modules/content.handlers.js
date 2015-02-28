@@ -1,10 +1,11 @@
+var $ = require('../libs/jquery');
+var msg = require('./msg').init('ct-handlers');
+
 function log() {
   console.log.apply(console, arguments);
 }
 
 module.exports.create = function(context) {
-  var $ = require('../libs/jquery');
-  var msg = require('./msg').init('ct-handlers');
   var inviteBtn;
 
   return {
@@ -74,6 +75,8 @@ module.exports.create = function(context) {
       log('opening Main');
       log(response);
 
+      //todo: check the main
+
       var foosafy = $('<div id="foosafy"></div>');
       $('body').append(foosafy);
 
@@ -96,30 +99,54 @@ module.exports.create = function(context) {
           log(value);
 
           var user = '<tr> \
-          <td style="width: 20%;"> \
-            <img src="' + value.avatar + '" /> \
-          </td> \
-          <td style="width: 40%;"> \
-            ' + value.firstName + ' "' + value.nickName + '" ' + value.lastName + ' \
-          </td> \
-          <td style="width: 40%;"> \
-            <a id="foosafyAddUser" data-id="' + value.id + '" data-avatar="' + value.avatar + '" class="foosafy-individual-add"  href="#">ADD</a> \
-            <a id="foosafyInviteUser" data-id="' + value.id + '" data-email="' + value.email + '" data-regid="' + value.regId + '" class="foosafy-individual-invite" href="#">INVITE</a> \
-          </td> \
-        </tr>';
+            <td style="width: 20%;"> \
+              <img src="' + value.avatar + '" /> \
+            </td> \
+            <td style="width: 40%;"> \
+              ' + value.firstName + ' "' + value.nickName + '" ' + value.lastName + ' \
+            </td> \
+            <td style="width: 40%;"> \
+              <a id="foosafyAddUser" data-id="' + value.id + '" data-avatar="' + value.avatar + '" class="foosafy-individual-add"  href="#">ADD</a> \
+              <a id="foosafyInviteUser" data-id="' + value.id + '" data-email="' + value.email + '" data-regid="' + value.regId + '" class="foosafy-individual-invite" href="#">INVITE</a> \
+            </td> \
+          </tr>';
 
           $(userList).append(user);
         });
 
+        var setMatchBtn = clone.querySelector('#setMatchBtn');
         var startMatchBtn = clone.querySelector('#startMatchBtn');
-        var hidden = clone.querySelectorAll('.hidden');
+        var hidden = clone.querySelectorAll('#foosafyPlayersList, #foosafyIndividual');
+
+        $(setMatchBtn).on('click', function(e) {
+          e.preventDefault();
+
+          //todo: load users now instead of before opening
+
+          $(hidden).addClass('reveal');
+
+          $(this).addClass('display-none');
+        });
 
         $(startMatchBtn).on('click', function(e) {
           e.preventDefault();
 
-          console.log(hidden)
+          // check for 4 foosers
+          var i = 0;
+          $(players).each(function(key, value) {
+            if($(this).data('player') == '') {
+              i++;
+            }
+          });
 
-          $(hidden).addClass('reveal');
+          if(i == 4) {
+
+          } else {
+            //not enough players, tell them to stop being idiots
+          }
+          // set match to playing
+
+          //
         });
 
         var randomBtn = clone.querySelector('#choseRandomBtn');
@@ -134,7 +161,11 @@ module.exports.create = function(context) {
         $(closeBtn).on('click', function(e) {
           e.preventDefault();
 
-          foosafy.removeClass('open');
+          killFoos();
+
+          // todo: set this in bg handler
+          chrome.storage.local.set({currentState: 'open'});
+          chrome.storage.local.get(null, function(all){console.log(all)});
         });
 
         // btn arrays
@@ -201,22 +232,26 @@ module.exports.create = function(context) {
       done('main open');
     },
     closeMain: function(done) {
-      $('#foosafy').removeClass('open').delay(400).promise().done(function() {
-        $('#foosafy').remove();
-      });
+      killFoos();
 
       done('main close');
     },
     acceptedInvite: function(done) {
 
-      done();
+      done('accepted invite');
     },
     inviteFailed: function(done) {
 
-      done();
+      done('invite failed');
     }
   };
 };
+
+function killFoos() {
+  $('#foosafy').removeClass('open').delay(400).promise().done(function() {
+    $('#foosafy').remove();
+  });
+}
 
 // for suppressing console.log output in unit tests:
 module.exports.__resetLog = function() { log = function() {}; };

@@ -83,7 +83,8 @@ module.exports = function(grunt) {
       js: {
         files: ['package.json', 'lint-options.json', 'Gruntfile.js', 'code/**/*.js',
                 'code/**/*.json', '!code/js/libs/*'],
-        tasks: ['test']
+        tasks: ['clean', 'test', 'mkdir:unpacked', 'copy:main', 'manifest',
+          'mkdir:js', 'browserify', 'copy:prod']
       }
     }
 
@@ -136,6 +137,6 @@ module.exports = function(grunt) {
   //
 
   grunt.registerTask('default', ['clean', 'test', 'mkdir:unpacked', 'copy:main', 'manifest',
-    'mkdir:js', 'browserify', 'copy:prod', /*'uglify', 'exec', 'circleci'*/]);
+    'mkdir:js', 'browserify', 'copy:prod'/*, 'uglify', 'exec', 'circleci'*/]);
 
 };
