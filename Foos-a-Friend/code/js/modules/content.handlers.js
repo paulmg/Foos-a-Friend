@@ -134,7 +134,7 @@ module.exports.create = function(context) {
           // check for 4 foosers
           var i = 0;
           $(players).each(function(key, value) {
-            if($(this).data('player') == '') {
+            if($(this).data('player') != '') {
               i++;
             }
           });
@@ -143,6 +143,7 @@ module.exports.create = function(context) {
 
           } else {
             //not enough players, tell them to stop being idiots
+
           }
           // set match to playing
 

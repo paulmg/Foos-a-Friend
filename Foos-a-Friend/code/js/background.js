@@ -1,3 +1,7 @@
+/* jslint node: true */
+/* global chrome: true */
+'use strict';
+
 ;(function() {
   console.log('BACKGROUND SCRIPT WORKS!');
   chrome.storage.local.set({currentState: 'register'});
