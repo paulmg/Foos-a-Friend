@@ -90,7 +90,7 @@ module.exports.create = function(context) {
 
         // player section
         var playersList = clone.querySelector('#foosafyPlayersList');
-        var players = playersList.querySelectorAll('.foosafy-pick-col');
+        var players = playersList.querySelectorAll('.foosafy-pick-row');
 
         // user section
         var userList = clone.querySelector('#foosafyUserList');
@@ -178,7 +178,7 @@ module.exports.create = function(context) {
             console.log('test', $(this));
             // set user to playing
             var userId = $(this).data("id");
-            log(userId);
+            console.log(userId);
 
             var playerAvatar = $(this).data("avatar") + "?s=150";
             // populate the top section depending on which player spot is open

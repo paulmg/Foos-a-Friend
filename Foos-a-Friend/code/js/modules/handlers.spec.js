@@ -1,7 +1,7 @@
 var assert = require('assert');
 var h, handlers = require('./handlers');
 
-// surpress console.log
+// supress console.log
 handlers.__resetLog();
 
 describe('handlers module', function() {

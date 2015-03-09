@@ -39,15 +39,15 @@
       -ms-interpolation-mode: bicubic;
     }
 
-    .foosafy-pick-row {
+    .foosafy-pick-col {
       display: inline-block;
     }
 
-    .foosafy-pick-col {
+    .foosafy-pick-row {
       position: relative;
     }
 
-    .foosafy-pick-col img {
+    .foosafy-pick-row img {
       margin: 15px;
     }
 
@@ -113,13 +113,27 @@
   <div id="closeFoosafyBtn" class="close-foosafy-btn">X</div>
   <a id="setMatchBtn" href="#" class="foosafy-link-setup transition">Set Up Match</a>
   <section id="foosafyPlayersList" class="foosafy-pick hidden transition">
-    <div class="foosafy-pick-row">
-      <div class="foosafy-pick-col" data-player=""><span class="foosafy-player-number">1</span><img src="//placehold.it/150x150" /></div>
-      <div class="foosafy-pick-col" data-player=""><span class="foosafy-player-number">2</span><img src="//placehold.it/150x150" /></div>
+    <div class="foosafy-pick-col">
+      <div class="foosafy-pick-row" data-player="">
+        <span class="foosafy-player-number">1</span>
+        <img src="//placehold.it/150x150" />
+        <span class="foosafy-player-name"></span>
+      </div>
+      <div class="foosafy-pick-row" data-player="">
+        <span class="foosafy-player-number">2</span>
+        <img src="//placehold.it/150x150" />
+        <span class="foosafy-player-name"></span>
+      </div>
     </div>
-    <div class="foosafy-pick-row">
-      <div class="foosafy-pick-col" data-player=""><img src="//placehold.it/150x150" /><span class="foosafy-player-number">3</span></div>
-      <div class="foosafy-pick-col" data-player=""><img src="//placehold.it/150x150" /><span class="foosafy-player-number">4</span></div>
+    <div class="foosafy-pick-col">
+      <div class="foosafy-pick-row" data-player="">
+        <img src="//placehold.it/150x150" />
+        <span class="foosafy-player-name"></span>
+        <span class="foosafy-player-number">3</span></div>
+      <div class="foosafy-pick-row" data-player="">
+        <img src="//placehold.it/150x150" />
+        <span class="foosafy-player-name"></span>
+        <span class="foosafy-player-number">4</span></div>
     </div>
     <div style="clear:both;"></div>
     <a id="startMatchBtn" href="#" class="foosafy-link-start transition">Start Match</a>

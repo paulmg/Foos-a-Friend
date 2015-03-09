@@ -54,7 +54,7 @@ module.exports.create = function(context) {
       done();
     },
     inviteUser: function(data, done) {
-      console.log(data)
+      console.log(data);
       console.log('invitingUser');
 
       $.post(config.server + '/inviteUser.php', data, function() {})
