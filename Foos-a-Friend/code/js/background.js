@@ -143,7 +143,7 @@
     // Pop up a notification to show the GCM message.
     chrome.notifications.create("", {
       title: 'Foos?',
-      iconUrl: chrome.extension.getURL('icons/faf_128.png'),
+      iconUrl: chrome.extension.getURL('images/faf_128.png'),
       type: 'basic',
       priority: 2,
       buttons: [{

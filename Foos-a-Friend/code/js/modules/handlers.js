@@ -61,6 +61,7 @@ module.exports.create = function(context) {
         .done(function(response) {
           console.log(response);
 
+          //todo: not correct
           if(response.failure != 0) {
             console.log('gcm message invite failure');
             //msg.cmd(['ct'], 'inviteFailed', function(){});
