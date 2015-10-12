@@ -7,3 +7,4 @@ build/unpacked-dev
 build/unpacked-prod
 *.swp
 src
+code/js/modules/config.js
