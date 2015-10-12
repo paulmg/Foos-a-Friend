@@ -1,1 +1,5 @@
-.idea/
+.idea
+wires
+server/global.php
+extension/src
+extension/code/js/modules/config.js
