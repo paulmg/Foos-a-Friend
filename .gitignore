@@ -1,5 +1,6 @@
 .idea
 wires
+psds
 server/global.php
 extension/src
 extension/code/js/modules/config.js
