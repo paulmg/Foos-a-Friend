@@ -59,8 +59,8 @@ module.exports.create = function(context) {
                 });
               }, 750);
             });
-          } else { // info not there cause you're a dingbat
-            $('#foosafy').text('Fill it out, shitlord.');
+          } else { // info not there
+            $('#foosafy').text('Fill it out.');
           }
         });
 

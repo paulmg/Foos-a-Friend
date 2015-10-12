@@ -2,7 +2,7 @@
   "name": "Foos a Friend",
   "version": "0.0.6",
   "manifest_version": 2,
-  "description": "Foos the shit out of your friends",
+  "description": "Chrome extension for match making Foos with  your friends",
   "homepage_url": "http://www.paulgraffix.com",
   "icons": {
     "16": "images/faf_16.png",

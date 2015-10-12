@@ -1,7 +1,7 @@
 {
   "name": "Foos-a-Friend",
   "version": "0.0.6",
-  "description": "Foos the shit out of your friends",
+  "description": "Chrome extension for match making Foos with your friends",
   "dependencies": {},
   "devDependencies": {
     "browserify": "~7.0.3",
